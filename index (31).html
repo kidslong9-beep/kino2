@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="referrer" content="strict-origin-when-cross-origin">
+<title>NOIRPLAY — Kino olami</title>
+<style>
+:root{--bg:#080b16;--panel:#14172a;--panel2:#20213a;--text:#f7f7fb;--muted:#a6a8c5;--red:#ff315b;--purple:#9b5cff;--line:#30324c}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif}button,input,select{font:inherit}button{cursor:pointer;color:inherit;border:0}
+.top{height:74px;display:flex;align-items:center;gap:30px;padding:0 5.5%;position:sticky;top:0;z-index:30;background:#090a0fea;backdrop-filter:blur(18px);border-bottom:1px solid #ffffff0b}.brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:1.5px;font-size:22px;white-space:nowrap}.brand-mark{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#ff274e,#8a2cff);display:grid;place-items:center;box-shadow:0 5px 24px #e5093540}.brand-mark:after{content:"";border-top:8px solid transparent;border-bottom:8px solid transparent;border-left:11px solid white;margin-left:3px}.brand span{color:#ff3156}.nav{display:flex;gap:24px;align-items:center}.nav button{background:none;color:#b8b9c5;font-size:14px}.nav button:hover,.nav button.active{color:white}.search{margin-left:auto;display:flex;align-items:center;gap:8px;background:#171821;border:1px solid #30313c;border-radius:25px;padding:0 14px;height:40px;width:min(300px,28vw)}.search input{background:transparent;border:0;outline:0;color:white;width:100%;min-width:0}.user{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#8a5cff,#e50935);display:grid;place-items:center;font-weight:bold}
+.admin-btn{background:linear-gradient(110deg,#7d42ff,#e50935);padding:10px 12px;border-radius:9px;font-size:12px;font-weight:800;white-space:nowrap}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.movie{animation:fadeUp .45s both}.movie:nth-child(2n){animation-delay:.04s}.movie:nth-child(3n){animation-delay:.08s}
+.poster{transition:box-shadow .3s,transform .3s}.movie:hover .poster{box-shadow:0 12px 35px #8a5cff30;transform:translateY(-3px)}
+.admin-form{display:flex;flex-direction:column;gap:8px}.admin-form label{font-size:12px;color:#c5c6d0;margin-top:5px}.admin-form input,.admin-form select,.admin-form textarea{width:100%;background:#0e0f16;border:1px solid #343541;color:white;border-radius:8px;padding:11px;outline:none}.admin-two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+main{max-width:1600px;margin:auto;padding:0 5.5% 70px}.hero{height:min(620px,64vw);min-height:430px;position:relative;overflow:hidden;border-radius:0 0 22px 22px;background:#191b28;margin-bottom:38px}.hero-img{position:absolute;inset:0;background-size:cover;background-position:center 30%;transform:scale(1.035);animation:heroKenBurns 18s ease-in-out infinite alternate;will-change:transform,filter}.hero-img.changing{animation:heroReveal 1.1s cubic-bezier(.2,.7,.2,1),heroKenBurns 18s ease-in-out 1.1s infinite alternate}@keyframes heroKenBurns{0%{transform:scale(1.02) translate3d(0,0,0);filter:saturate(1.02)}100%{transform:scale(1.13) translate3d(-1.2%,.4%,0);filter:saturate(1.18)}}@keyframes heroReveal{0%{opacity:.45;filter:blur(5px) saturate(.7);transform:scale(1.09)}100%{opacity:1;filter:blur(0) saturate(1.08);transform:scale(1.035)}}.hero:before{content:"";position:absolute;z-index:1;inset:0;pointer-events:none;background:radial-gradient(ellipse at 78% 35%,#a44dff20,transparent 48%);mix-blend-mode:screen}.hero-img:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#090a0f 0%,#090a0fdc 25%,#090a0f4f 64%,#090a0f0b 100%),linear-gradient(0deg,#090a0f 0%,transparent 42%)}.hero-content{position:absolute;z-index:2;left:5%;bottom:12%;max-width:580px}.eyebrow{display:flex;align-items:center;gap:9px;color:#ff6a83;font-weight:800;font-size:12px;letter-spacing:2px;text-transform:uppercase}.pill{padding:5px 9px;border:1px solid #ffffff35;border-radius:5px;color:#eee;font-size:11px;letter-spacing:.5px}.hero h1{font-size:clamp(36px,5.4vw,68px);line-height:1.02;margin:18px 0 14px;letter-spacing:-1.7px}.meta-line{display:flex;gap:12px;align-items:center;color:#d2d3dc;font-size:13px;flex-wrap:wrap}.rating{color:#ffc857;font-weight:bold}.hero p{color:#c2c4cf;line-height:1.7;font-size:15px;max-width:500px}.hero-actions{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}.btn{padding:13px 21px;border-radius:8px;font-weight:800;display:inline-flex;align-items:center;gap:9px;transition:transform .2s,filter .2s}.btn:hover{transform:translateY(-2px);filter:brightness(1.1)}.btn-primary{background:linear-gradient(110deg,#ff254c,#d90038);box-shadow:0 8px 24px #e5093538}.btn-secondary{background:#ffffff18;border:1px solid #ffffff24;backdrop-filter:blur(10px)}
+.hero-dots{position:absolute;right:28px;bottom:24px;z-index:4;display:flex;gap:7px;align-items:center;padding:10px 12px;border-radius:30px;background:#07081075;border:1px solid #ffffff22;backdrop-filter:blur(12px)}.dot{width:7px;height:7px;border-radius:20px;background:#ffffff72;cursor:pointer;transition:width .35s,background .35s,transform .35s}.dot:hover{transform:scale(1.25)}.dot.active{width:28px;background:linear-gradient(90deg,#ff315b,#a66aff);box-shadow:0 0 14px #ff315b75}.hero-kicker{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:30px;background:#120e20b8;border:1px solid #ffffff25;box-shadow:0 8px 30px #0004;backdrop-filter:blur(12px)}.hero-kicker .live-dot{width:7px;height:7px;border-radius:50%;background:#ff315b;box-shadow:0 0 12px #ff315b;animation:livePulse 1.5s infinite}.hero-kicker span:last-child{font-size:11px;letter-spacing:1.7px;color:#fff;font-weight:900}@keyframes livePulse{50%{opacity:.45;transform:scale(.75)}}.hero-progress{position:absolute;z-index:5;left:0;right:0;bottom:0;height:3px;background:#ffffff18}.hero-progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff315b,#b05cff);box-shadow:0 0 14px #ff315b;transform-origin:left}.hero-progress.playing span{animation:heroProgress 6.5s linear forwards}@keyframes heroProgress{from{width:0}to{width:100%}}@media(prefers-reduced-motion:reduce){.hero-img,.hero-img.changing,.hero-kicker .live-dot{animation:none!important}}
+.section{margin:34px 0 42px}.section-head{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:18px}.section h2{font-size:22px;margin:0;letter-spacing:-.4px}.sub{font-size:12px;color:var(--muted);margin-top:6px}.see-all{background:none;color:#ff637e;font-size:13px;font-weight:bold;white-space:nowrap}.movie-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:18px 14px}.movie{min-width:0;cursor:pointer;position:relative}.poster{aspect-ratio:2/3;position:relative;overflow:hidden;border-radius:11px;background:linear-gradient(135deg,#292b38,#11121a);box-shadow:0 8px 25px #0004}.poster img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s,filter .35s}.movie:hover .poster img{transform:scale(1.07);filter:brightness(.68)}.poster:after{content:"▶";position:absolute;left:50%;top:50%;transform:translate(-50%,-40%) scale(.7);width:48px;height:48px;border-radius:50%;display:grid;place-items:center;padding-left:3px;background:#e50935;color:white;opacity:0;transition:.25s;box-shadow:0 5px 25px #e5093580}.movie:hover .poster:after{opacity:1;transform:translate(-50%,-50%) scale(1)}.quality{position:absolute;top:9px;left:9px;background:#e50935;color:#fff;font-size:10px;font-weight:900;padding:5px 6px;border-radius:4px;z-index:1}.fav{position:absolute;top:7px;right:7px;background:#07070abf;width:30px;height:30px;border-radius:50%;font-size:17px;z-index:2}.fav.saved{color:#ff3156}.movie-info{padding:10px 2px 0}.movie-title{font-size:14px;line-height:1.35;font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.movie-meta{color:var(--muted);font-size:12px;margin-top:6px;display:flex;justify-content:space-between;gap:4px}.genre-row{display:flex;gap:10px;overflow:auto;padding:3px 0 12px;scrollbar-width:none}.genre{flex:0 0 auto;padding:11px 18px;background:#171821;border:1px solid #292b36;border-radius:9px;color:#d3d4df;font-size:13px}.genre.active,.genre:hover{background:#e50935;border-color:#e50935;color:#fff}
+.wide-card{display:grid;grid-template-columns:1.2fr 1fr;min-height:230px;border-radius:16px;overflow:hidden;background:linear-gradient(110deg,#211527,#13131d);border:1px solid #ffffff0b}.wide-img{background-size:cover;background-position:center;min-height:230px;position:relative}.wide-img:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,#211527)}.wide-text{padding:32px;align-self:center}.wide-text h2{font-size:27px;margin:10px 0}.wide-text p{color:#b8b9c5;line-height:1.65;font-size:14px}.empty{display:none;padding:55px;text-align:center;color:var(--muted)}footer{border-top:1px solid var(--line);padding:28px 5.5%;color:#777987;font-size:12px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.overlay{display:none;position:fixed;inset:0;background:#000d;z-index:60;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(8px)}.overlay.show{display:flex}.modal{width:min(950px,100%);max-height:92vh;overflow:auto;background:#15161f;border:1px solid #343541;border-radius:16px;box-shadow:0 30px 100px #000b}.modal-head{display:flex;justify-content:space-between;align-items:center;padding:13px 18px;border-bottom:1px solid #30313c}.close{width:36px;height:36px;border-radius:50%;background:#292b36;font-size:20px}.player{aspect-ratio:16/9;background:#000}.player iframe{width:100%;height:100%;border:0}.details{padding:20px}.details h2{margin:0 0 10px}.details p{color:#c1c2ce;line-height:1.7;font-size:14px}.detail-actions{display:flex;gap:10px;flex-wrap:wrap}.toast{position:fixed;bottom:25px;left:50%;transform:translateX(-50%);background:#f2f2f5;color:#111;padding:12px 18px;border-radius:10px;display:none;z-index:100;font-size:14px}
+@media(max-width:1150px){.movie-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.top{gap:20px}.nav{gap:14px}.hero{min-height:420px}}
+@media(max-width:760px){.admin-btn{font-size:0;padding:10px}.admin-two{grid-template-columns:1fr}.top{height:60px;padding:0 14px;gap:12px}.brand{font-size:18px;gap:7px}.brand-mark{width:30px;height:30px}.nav{display:none}.search{width:auto;flex:1;height:36px;padding:0 10px}.user{width:31px;height:31px;flex-shrink:0}main{padding:0 14px 45px}.hero{margin-left:-14px;margin-right:-14px;height:560px;min-height:0;border-radius:0 0 15px 15px}.hero-img{background-position:60% center}.hero-img:after{background:linear-gradient(0deg,#090a0f 1%,#090a0fdc 32%,#090a0f2b 100%),linear-gradient(90deg,#090a0f80,transparent)}.hero-content{left:18px;right:18px;bottom:10%;max-width:100%}.hero h1{font-size:43px;margin:13px 0}.hero p{font-size:13px;line-height:1.55;margin:12px 0}.hero-actions{margin-top:17px}.btn{padding:11px 14px;font-size:13px}.hero-dots{right:18px;bottom:17px}.section{margin:28px 0 35px}.section h2{font-size:19px}.movie-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 12px}.movie-title{font-size:13px}.poster{border-radius:9px}.quality{font-size:9px;top:7px;left:7px}.fav{width:28px;height:28px}.wide-card{grid-template-columns:1fr}.wide-img{min-height:170px}.wide-img:after{background:linear-gradient(0deg,#211527,transparent)}.wide-text{padding:20px}.wide-text h2{font-size:23px}.overlay{padding:9px}.modal{border-radius:12px}.details{padding:14px}.details h2{font-size:19px}}
+
+/* Mobile-first fixes: compact header, safe-area bottom navigation, touch-friendly forms */
+html{scroll-behavior:smooth;scroll-padding-top:82px}body{overflow-x:hidden}img{max-width:100%}input,textarea,select{font-size:16px}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid #a78bfa;outline-offset:2px}
+.mobile-nav{display:none}.page-section.page-hidden{display:none!important}.page-title{font-size:26px;margin:18px 0 22px}.page-empty{padding:30px 14px;color:var(--muted);text-align:center}
+.auth-mode{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 14px;padding:5px;border-radius:12px;background:#0c0d16;border:1px solid #30324c}
+.auth-mode button{padding:11px 8px;border-radius:8px;background:transparent;color:#b7b8ca;font-weight:800}
+.auth-mode button.active{background:linear-gradient(110deg,#7d42ff,#e50935);color:#fff;box-shadow:0 5px 18px #7d42ff30}
+.auth-status{font-size:12px;color:#b7b8ca;line-height:1.5;margin:0 0 12px}
+@media(max-width:760px){
+ html{scroll-padding-top:70px}.top{height:auto;min-height:60px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:'brand search profile' 'navsearch navsearch navsearch';gap:10px;padding:10px 12px}.brand{grid-area:brand;font-size:16px;letter-spacing:.7px}.brand-mark{width:28px;height:28px;border-radius:8px}.search{grid-area:search;width:100%;min-width:0;height:38px;margin:0;padding:0 10px}.search input{font-size:14px}.user{grid-area:profile;width:36px;height:36px}.admin-btn{position:fixed;right:14px;bottom:calc(72px + env(safe-area-inset-bottom));z-index:35;font-size:12px;padding:11px 13px;box-shadow:0 8px 25px #e5093550;border-radius:999px}.nav{display:none!important}
+ main{padding:0 12px calc(104px + env(safe-area-inset-bottom))}.hero{height:min(590px,calc(100svh - 120px));min-height:430px;margin-left:-12px;margin-right:-12px;margin-bottom:28px}.hero-content{left:17px;right:17px;bottom:12%;}.hero h1{font-size:clamp(32px,9vw,44px);overflow-wrap:anywhere}.hero p{max-width:38ch}.meta-line{gap:8px;font-size:12px}.hero-actions{gap:8px}.btn{min-height:42px;justify-content:center}.section-head{align-items:flex-start;gap:8px}.section-head .sub{max-width:34ch;line-height:1.45}.section h2{font-size:18px;line-height:1.25}.see-all{font-size:11px;padding:5px 0}.movie-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 10px}.movie-info{padding-top:8px}.movie-title{font-size:13px}.movie-meta{font-size:10px;flex-wrap:wrap}.poster{border-radius:10px}.fav{width:32px;height:32px;font-size:18px}.quality{font-size:9px}.genre-row{margin-right:-12px;padding-right:12px}.genre{padding:10px 13px}.wide-card{grid-template-columns:1fr}.wide-img{min-height:150px}.wide-text{padding:18px}.wide-text h2{font-size:22px}.overlay{align-items:flex-end;padding:0;overscroll-behavior:contain}.modal{width:100%;max-height:92dvh;max-height:92vh;border-radius:18px 18px 0 0;padding-bottom:env(safe-area-inset-bottom)}.modal-head{position:sticky;top:0;z-index:2;background:#15161f;padding:11px 14px}.details{padding:14px}.admin-two{grid-template-columns:1fr 1fr;gap:8px}.admin-form input,.admin-form select,.admin-form textarea{padding:12px;min-height:44px}.admin-form label{font-size:13px}.player{width:100%;aspect-ratio:16/9}.mobile-nav{position:fixed;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));left:0;right:0;bottom:0;z-index:32;padding:8px 8px calc(8px + env(safe-area-inset-bottom));background:#0b0c16f5;border-top:1px solid #ffffff18;backdrop-filter:blur(18px)}.mobile-nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:transparent;color:#a8a9bf;font-size:10px;min-height:44px;min-width:0}.mobile-nav button span:last-child{white-space:nowrap;font-size:9px}.mobile-nav button span:first-child{font-size:19px}.mobile-nav button.active{color:#ff5578}.toast{bottom:calc(80px + env(safe-area-inset-bottom));width:calc(100% - 28px);max-width:420px;text-align:center}
+}
+@media(max-width:380px){.brand{font-size:14px;gap:5px}.brand-mark{width:25px;height:25px}.search{height:35px}.hero{min-height:410px}.hero h1{font-size:31px}.hero-actions .btn{padding:10px;font-size:12px}.admin-two{grid-template-columns:1fr}.section-head{flex-direction:column}.see-all{align-self:flex-end}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* NOIRPLAY SOFT GRAPHITE DARK THEME */
+:root{--bg:#17191f;--panel:#22252d;--panel2:#2b2f39;--text:#f5f6fa;--muted:#b7bbc6;--accent:#a78bfa;--accent2:#e879b9;--cyan:#8bd9e8;--gold:#ffd166;--green:#79d6a2;--line:rgba(210,215,230,.13)}
+body{background:radial-gradient(ellipse at 8% 0%,rgba(167,139,250,.10),transparent 38%),radial-gradient(ellipse at 92% 10%,rgba(232,121,185,.07),transparent 34%),#17191f!important;color:var(--text)}
+header,.topbar,.navbar,.site-header{background:rgba(25,27,34,.94)!important;border-bottom:1px solid rgba(210,215,230,.12)!important;backdrop-filter:blur(18px)}
+.logo,.brand,.site-logo{background:linear-gradient(100deg,#c4b5fd 0%,#a78bfa 55%,#f0a4cf 100%);-webkit-background-clip:text;background-clip:text;color:transparent!important;text-shadow:0 0 22px rgba(167,139,250,.12)}
+button,.btn,.primary-btn,.watch-btn,.action-btn{background:linear-gradient(115deg,#8068c9,#bd6d9d)!important;color:#fff!important;border:0!important;box-shadow:0 6px 18px rgba(90,75,130,.18);transition:transform .22s ease,filter .22s ease,box-shadow .22s ease}
+button:hover,.btn:hover,.primary-btn:hover,.watch-btn:hover,.action-btn:hover{transform:translateY(-2px);filter:brightness(1.08);box-shadow:0 9px 24px rgba(150,110,180,.2)}
+input,select,textarea,.search-box{background:#252832!important;color:#f5f6fa!important;border:1px solid #414652!important;border-radius:12px}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#a78bfa!important;box-shadow:0 0 0 3px rgba(167,139,250,.12)!important}
+.card,.movie-card,.section-card,.modal-content,.panel,.category-card{background:linear-gradient(150deg,#2b2f38,#22252d)!important;border:1px solid rgba(210,215,230,.12)!important;box-shadow:0 10px 28px rgba(0,0,0,.18)}
+.card:hover,.movie-card:hover,.section-card:hover,.category-card:hover{border-color:rgba(167,139,250,.48)!important;box-shadow:0 12px 30px rgba(0,0,0,.24),0 0 0 1px rgba(167,139,250,.08);transform:translateY(-4px)}
+h1,h2,h3,.section-title{background:linear-gradient(90deg,#fff 0%,#ded7f5 58%,#edc6dc 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.badge,.tag,.genre,.chip,.category-pill{background:linear-gradient(100deg,rgba(167,139,250,.16),rgba(232,121,185,.11))!important;color:#e9e5f4!important;border:1px solid rgba(190,175,220,.2)!important}
+.rating,.stars,.star-rating{color:var(--gold)!important}
+nav a.active,.active,.selected{color:#fff!important;background:linear-gradient(100deg,rgba(167,139,250,.20),rgba(232,121,185,.12))!important;border-color:rgba(167,139,250,.32)!important}
+hr,.divider{border-color:rgba(210,215,230,.12)!important}::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-track{background:#1b1e25}::-webkit-scrollbar-thumb{background:linear-gradient(#8e7acb,#bd7fa6);border-radius:10px}
+@media(max-width:600px){body{background:radial-gradient(ellipse at 0% 0%,rgba(167,139,250,.09),transparent 40%),radial-gradient(ellipse at 100% 12%,rgba(232,121,185,.06),transparent 35%),#17191f!important}.card,.movie-card{border-radius:16px!important}}
+
+
+/* NOIRPLAY BIG BRIGHT BOTTOM NAV + ORBITING BUBBLES */
+.bottom-nav,.mobile-nav,.footer-nav,.bottom-navigation,.tab-bar,.nav-bottom{
+  position:fixed!important;left:50%!important;bottom:max(12px,env(safe-area-inset-bottom))!important;
+  transform:translateX(-50%)!important;width:min(96%,720px)!important;
+  display:flex!important;align-items:center!important;justify-content:space-around!important;
+  gap:clamp(4px,1.5vw,14px)!important;padding:12px clamp(8px,2vw,18px)!important;
+  min-height:88px!important;border-radius:28px!important;z-index:9999!important;
+  background:rgba(35,38,47,.97)!important;border:1px solid rgba(210,215,230,.18)!important;
+  box-shadow:0 14px 40px rgba(0,0,0,.38),0 0 24px rgba(130,115,180,.12)!important;
+  backdrop-filter:blur(20px)!important;
+}
+.bottom-nav a,.mobile-nav a,.footer-nav a,.bottom-navigation a,.tab-bar a,.nav-bottom a,
+.bottom-nav button,.mobile-nav button,.footer-nav button,.bottom-navigation button,.tab-bar button,.nav-bottom button{
+  position:relative!important;isolation:isolate!important;overflow:visible!important;
+  display:flex!important;flex:1 1 0!important;min-width:0!important;min-height:64px!important;
+  flex-direction:column!important;align-items:center!important;justify-content:center!important;
+  gap:6px!important;padding:8px 5px!important;border-radius:22px!important;
+  color:#303451!important;font-size:clamp(11px,2.7vw,14px)!important;font-weight:800!important;
+  text-decoration:none!important;background:linear-gradient(145deg,#fff,#edf1ff)!important;
+  border:1px solid rgba(100,110,180,.12)!important;
+  box-shadow:0 5px 12px rgba(40,50,100,.09)!important;
+  transition:transform .28s ease,box-shadow .28s ease,background .28s ease!important;
+}
+.bottom-nav a:nth-child(1),.mobile-nav a:nth-child(1),.footer-nav a:nth-child(1),.bottom-navigation a:nth-child(1),.tab-bar a:nth-child(1),.nav-bottom a:nth-child(1),
+.bottom-nav button:nth-child(1),.mobile-nav button:nth-child(1),.footer-nav button:nth-child(1),.bottom-navigation button:nth-child(1),.tab-bar button:nth-child(1),.nav-bottom button:nth-child(1){
+  background:linear-gradient(145deg,#b9f7ff,#66dfff)!important;color:#073d65!important;
+}
+.bottom-nav a:nth-child(2),.mobile-nav a:nth-child(2),.footer-nav a:nth-child(2),.bottom-navigation a:nth-child(2),.tab-bar a:nth-child(2),.nav-bottom a:nth-child(2),
+.bottom-nav button:nth-child(2),.mobile-nav button:nth-child(2),.footer-nav button:nth-child(2),.bottom-navigation button:nth-child(2),.tab-bar button:nth-child(2),.nav-bottom button:nth-child(2){
+  background:linear-gradient(145deg,#ffd4f0,#ff9bdc)!important;color:#78104f!important;
+}
+.bottom-nav a:nth-child(3),.mobile-nav a:nth-child(3),.footer-nav a:nth-child(3),.bottom-navigation a:nth-child(3),.tab-bar a:nth-child(3),.nav-bottom a:nth-child(3),
+.bottom-nav button:nth-child(3),.mobile-nav button:nth-child(3),.footer-nav button:nth-child(3),.bottom-navigation button:nth-child(3),.tab-bar button:nth-child(3),.nav-bottom button:nth-child(3){
+  background:linear-gradient(145deg,#e4d2ff,#bda0ff)!important;color:#382071!important;
+}
+.bottom-nav a:nth-child(4),.mobile-nav a:nth-child(4),.footer-nav a:nth-child(4),.bottom-navigation a:nth-child(4),.tab-bar a:nth-child(4),.nav-bottom a:nth-child(4),
+.bottom-nav button:nth-child(4),.mobile-nav button:nth-child(4),.footer-nav button:nth-child(4),.bottom-navigation button:nth-child(4),.tab-bar button:nth-child(4),.nav-bottom button:nth-child(4){
+  background:linear-gradient(145deg,#d6ffd9,#8df3a6)!important;color:#14532b!important;
+}
+.bottom-nav a:nth-child(5),.mobile-nav a:nth-child(5),.footer-nav a:nth-child(5),.bottom-navigation a:nth-child(5),.tab-bar a:nth-child(5),.nav-bottom a:nth-child(5),
+.bottom-nav button:nth-child(5),.mobile-nav button:nth-child(5),.footer-nav button:nth-child(5),.bottom-navigation button:nth-child(5),.tab-bar button:nth-child(5),.nav-bottom button:nth-child(5){
+  background:linear-gradient(145deg,#fff0b8,#ffd66b)!important;color:#71450b!important;
+}
+.bottom-nav a:hover,.mobile-nav a:hover,.footer-nav a:hover,.bottom-navigation a:hover,.tab-bar a:hover,.nav-bottom a:hover,
+.bottom-nav button:hover,.mobile-nav button:hover,.footer-nav button:hover,.bottom-navigation button:hover,.tab-bar button:hover,.nav-bottom button:hover{
+  transform:translateY(-7px) scale(1.04)!important;box-shadow:0 12px 24px rgba(70,70,140,.2)!important;
+}
+.bottom-nav a::before,.mobile-nav a::before,.footer-nav a::before,.bottom-navigation a::before,.tab-bar a::before,.nav-bottom a::before,
+.bottom-nav button::before,.mobile-nav button::before,.footer-nav button::before,.bottom-navigation button::before,.tab-bar button::before,.nav-bottom button::before{
+  content:"";position:absolute;z-index:-1;left:50%;top:50%;width:18px;height:18px;border-radius:50%;
+  transform:translate(-50%,-50%);background:rgba(255,255,255,.65);opacity:0;
+  animation:navBubble 3.8s ease-in-out infinite;pointer-events:none;
+}
+.bottom-nav a:nth-child(2)::before,.mobile-nav a:nth-child(2)::before,.footer-nav a:nth-child(2)::before,.bottom-navigation a:nth-child(2)::before,.tab-bar a:nth-child(2)::before,.nav-bottom a:nth-child(2)::before{animation-delay:.5s}
+.bottom-nav a:nth-child(3)::before,.mobile-nav a:nth-child(3)::before,.footer-nav a:nth-child(3)::before,.bottom-navigation a:nth-child(3)::before,.tab-bar a:nth-child(3)::before,.nav-bottom a:nth-child(3)::before{animation-delay:1s}
+.bottom-nav a:nth-child(4)::before,.mobile-nav a:nth-child(4)::before,.footer-nav a:nth-child(4)::before,.bottom-navigation a:nth-child(4)::before,.tab-bar a:nth-child(4)::before,.nav-bottom a:nth-child(4)::before{animation-delay:1.5s}
+@keyframes navBubble{
+  0%,100%{opacity:0;width:14px;height:14px;transform:translate(-50%,-50%) scale(.5)}
+  35%{opacity:.85;width:48px;height:48px;transform:translate(-50%,-50%) scale(1)}
+  70%{opacity:.1;width:66px;height:66px;transform:translate(-50%,-50%) scale(1.08)}
+}
+.bottom-nav svg,.mobile-nav svg,.footer-nav svg,.bottom-navigation svg,.tab-bar svg,.nav-bottom svg,
+.bottom-nav i,.mobile-nav i,.footer-nav i,.bottom-navigation i,.tab-bar i,.nav-bottom i{
+  font-size:clamp(23px,6vw,30px)!important;width:28px!important;height:28px!important;
+  filter:drop-shadow(0 2px 3px rgba(30,40,80,.14));
+}
+body{padding-bottom:120px!important}
+@media(max-width:480px){
+ .bottom-nav,.mobile-nav,.footer-nav,.bottom-navigation,.tab-bar,.nav-bottom{
+   width:calc(100% - 16px)!important;bottom:max(8px,env(safe-area-inset-bottom))!important;
+   min-height:80px!important;padding:8px 6px!important;border-radius:24px!important;gap:4px!important
+ }
+ .bottom-nav a,.mobile-nav a,.footer-nav a,.bottom-navigation a,.tab-bar a,.nav-bottom a,
+ .bottom-nav button,.mobile-nav button,.footer-nav button,.bottom-navigation button,.tab-bar button,.nav-bottom button{
+   min-height:62px!important;padding:7px 2px!important;border-radius:18px!important;font-size:10px!important
+ }
+ body{padding-bottom:108px!important}
+}
+
+
+
+/* NOIRPLAY responsive layout + rounded top navigation */
+.top{
+  box-sizing:border-box;
+  width:100%;
+  min-width:0;
+}
+.top .nav{
+  flex:1 1 auto;
+  min-width:0;
+  justify-content:center;
+  gap:clamp(6px,1vw,13px);
+}
+.top .nav button{
+  flex:0 0 auto;
+  border:1px solid rgba(190,160,255,.18);
+  border-radius:999px;
+  padding:10px 15px;
+  line-height:1.15;
+  background:linear-gradient(135deg,rgba(151,112,220,.18),rgba(210,112,175,.12));
+  color:#eee9fa;
+  white-space:nowrap;
+  transition:background .2s ease,transform .2s ease,border-color .2s ease;
+}
+.top .nav button:hover,
+.top .nav button.active{
+  background:linear-gradient(110deg,#8b69cb,#bd6ca9);
+  border-color:rgba(255,255,255,.25);
+  color:#fff;
+  transform:translateY(-1px);
+}
+@media (min-width:761px) and (max-width:1100px){
+  .top{gap:12px;padding-left:2.5%;padding-right:2.5%}
+  .brand{font-size:18px;gap:7px}
+  .top .nav{gap:5px}
+  .top .nav button{padding:9px 10px;font-size:12px}
+  .search{width: min(190px,19vw)}
+}
+@media (min-width:761px) and (max-width:900px){
+  .top .nav{overflow-x:auto;justify-content:flex-start;scrollbar-width:none}
+  .top .nav::-webkit-scrollbar{display:none}
+  .top .nav button{font-size:11px;padding:8px 9px}
+}
+@media (max-width:760px){
+  .top{
+    grid-template-columns:auto minmax(0,1fr) auto;
+    align-items:center;
+    padding:9px 12px;
+    gap:9px;
+  }
+  .top .nav{display:none!important}
+  .brand{white-space:nowrap}
+  .search{border-radius:999px}
+  .user{border:2px solid rgba(255,255,255,.2)}
+  .mobile-nav{
+    border-radius:22px 22px 0 0;
+    box-shadow:0 -8px 28px rgba(0,0,0,.25);
+  }
+  .mobile-nav button{border-radius:16px}
+}
+@media (max-width:390px){
+  .top{grid-template-columns:auto minmax(0,1fr) 32px;gap:7px;padding-left:9px;padding-right:9px}
+  .brand{font-size:13px;letter-spacing:.3px}
+  .brand-mark{width:24px;height:24px}
+  .search{height:34px;font-size:12px}
+  .search input{font-size:12px}
+  .user{width:30px;height:30px}
+  .mobile-nav{padding-left:4px;padding-right:4px}
+  .mobile-nav button span:last-child{font-size:8px}
+}
+@media (min-width:761px){
+  main{width:min(100%,1500px);margin-left:auto;margin-right:auto}
+  .hero{border-radius:26px;overflow:hidden}
+}
+
+
+
+/* Final polish: pill-shaped header links and colorful animated bottom tabs */
+.top .nav{
+  gap:clamp(6px,1vw,12px)!important;
+  align-items:center!important;
+}
+.top .nav button{
+  border-radius:999px!important;
+  padding:10px 16px!important;
+  border:1px solid rgba(205,177,255,.24)!important;
+  background:linear-gradient(135deg,rgba(151,112,220,.22),rgba(224,119,185,.17))!important;
+  color:#f1eaff!important;
+  box-shadow:0 4px 14px rgba(120,83,180,.10)!important;
+  transition:transform .25s ease,background .3s ease,box-shadow .3s ease!important;
+}
+.top .nav button:hover,
+.top .nav button.active{
+  border-color:rgba(255,255,255,.4)!important;
+  background:linear-gradient(110deg,#8864d0,#c66eaa)!important;
+  color:#fff!important;
+  box-shadow:0 6px 20px rgba(183,105,205,.32)!important;
+  transform:translateY(-2px)!important;
+}
+.bottom-nav,.mobile-nav,.footer-nav,.bottom-navigation,.tab-bar,.nav-bottom{
+  border-radius:34px!important;
+  padding:10px!important;
+  gap:8px!important;
+}
+.bottom-nav a,.mobile-nav a,.footer-nav a,.bottom-navigation a,.tab-bar a,.nav-bottom a,
+.bottom-nav button,.mobile-nav button,.footer-nav button,.bottom-navigation button,.tab-bar button,.nav-bottom button{
+  border-radius:26px!important;
+  min-height:68px!important;
+  transform:translateY(0) scale(1)!important;
+  transition:transform .32s cubic-bezier(.2,.8,.2,1),filter .32s ease,box-shadow .32s ease!important;
+  animation:tabFloat 4s ease-in-out infinite;
+}
+.bottom-nav a:nth-child(2),.mobile-nav a:nth-child(2),.footer-nav a:nth-child(2),.bottom-navigation a:nth-child(2),.tab-bar a:nth-child(2),.nav-bottom a:nth-child(2),
+.bottom-nav button:nth-child(2),.mobile-nav button:nth-child(2),.footer-nav button:nth-child(2),.bottom-navigation button:nth-child(2),.tab-bar button:nth-child(2),.nav-bottom button:nth-child(2){animation-delay:.25s}
+.bottom-nav a:nth-child(3),.mobile-nav a:nth-child(3),.footer-nav a:nth-child(3),.bottom-navigation a:nth-child(3),.tab-bar a:nth-child(3),.nav-bottom a:nth-child(3),
+.bottom-nav button:nth-child(3),.mobile-nav button:nth-child(3),.footer-nav button:nth-child(3),.bottom-navigation button:nth-child(3),.tab-bar button:nth-child(3),.nav-bottom button:nth-child(3){animation-delay:.5s}
+.bottom-nav a:nth-child(4),.mobile-nav a:nth-child(4),.footer-nav a:nth-child(4),.bottom-navigation a:nth-child(4),.tab-bar a:nth-child(4),.nav-bottom a:nth-child(4),
+.bottom-nav button:nth-child(4),.mobile-nav button:nth-child(4),.footer-nav button:nth-child(4),.bottom-navigation button:nth-child(4),.tab-bar button:nth-child(4),.nav-bottom button:nth-child(4){animation-delay:.75s}
+.bottom-nav a:nth-child(5),.mobile-nav a:nth-child(5),.footer-nav a:nth-child(5),.bottom-navigation a:nth-child(5),.tab-bar a:nth-child(5),.nav-bottom a:nth-child(5),
+.bottom-nav button:nth-child(5),.mobile-nav button:nth-child(5),.footer-nav button:nth-child(5),.bottom-navigation button:nth-child(5),.tab-bar button:nth-child(5),.nav-bottom button:nth-child(5){animation-delay:1s}
+.bottom-nav a:hover,.mobile-nav a:hover,.footer-nav a:hover,.bottom-navigation a:hover,.tab-bar a:hover,.nav-bottom a:hover,
+.bottom-nav button:hover,.mobile-nav button:hover,.footer-nav button:hover,.bottom-navigation button:hover,.tab-bar button:hover,.nav-bottom button:hover,
+.bottom-nav a.active,.mobile-nav button.active,.bottom-nav button.active{
+  transform:translateY(-7px) scale(1.055)!important;
+  filter:saturate(1.25) brightness(1.06)!important;
+  box-shadow:0 12px 26px rgba(150,105,230,.3),0 0 0 2px rgba(255,255,255,.5) inset!important;
+}
+@keyframes tabFloat{
+  0%,100%{filter:saturate(1);box-shadow:0 5px 12px rgba(40,50,100,.09)}
+  50%{filter:saturate(1.12);box-shadow:0 8px 18px rgba(120,90,190,.18)}
+}
+@media(max-width:760px){
+  .mobile-nav{border-radius:30px 30px 24px 24px!important}
+  .mobile-nav button{border-radius:24px!important;min-height:68px!important}
+  .mobile-nav button span:first-child{transition:transform .3s ease,filter .3s ease}
+  .mobile-nav button:hover span:first-child,
+  .mobile-nav button.active span:first-child{transform:translateY(-3px) scale(1.16);filter:drop-shadow(0 3px 5px rgba(60,40,100,.25))}
+}
+@media(prefers-reduced-motion:reduce){
+  .bottom-nav a,.mobile-nav button,.bottom-nav button{animation:none!important;transition:none!important}
+}
+
+
+.youtube-search-card{height:100%;min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;background:radial-gradient(circle at 50% 0%,#39304f,#11121a 70%);color:#f5f1ff}.youtube-search-card p{max-width:420px;color:#b9b7c8;line-height:1.55}
+
+
+/* NOIRPLAY FINAL FIXES: responsive navigation, modal layering, YouTube error 153 */
+.mobile-nav{display:none!important;}
+body{padding-bottom:0!important;}
+@media(max-width:760px){
+ .mobile-nav{display:grid!important;z-index:45!important;}
+ body{padding-bottom:112px!important;}
+ .top{gap:10px!important;padding-left:12px!important;padding-right:12px!important;}
+ .brand{flex:0 0 auto!important;}
+ .search{min-width:0!important;}
+ .overlay{z-index:10000!important;}
+ .overlay.show{display:flex!important;}
+ .modal{position:relative;z-index:10001!important;}
+ body.modal-open .mobile-nav,body.modal-open .admin-btn{display:none!important;}
+}
+@media(min-width:761px){
+ .mobile-nav{display:none!important;}
+ body{padding-bottom:0!important;}
+ .top{gap:clamp(10px,1.7vw,24px)!important;padding-left:clamp(18px,4vw,70px)!important;padding-right:clamp(18px,4vw,70px)!important;}
+ .brand{flex:0 0 auto;}
+ .nav{gap:clamp(8px,1.3vw,20px)!important;flex:0 1 auto;min-width:0;}
+ .nav button{white-space:nowrap;padding:9px 13px!important;border-radius:999px!important;}
+ .search{flex:0 1 270px;width:auto;min-width:145px;margin-left:auto!important;}
+ .admin-btn{flex:0 0 auto;}
+ .overlay{z-index:10000!important;}
+ .modal{position:relative;z-index:10001!important;}
+}
+.np-video-preview{width:100%;min-height:260px;aspect-ratio:16/9;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(220px,1fr);background:radial-gradient(ellipse at 75% 40%,#3d1452,#10111a 65%);}
+.np-video-thumb{min-height:220px;background-color:#10111a;background-size:cover;background-position:center;display:grid;place-items:center;position:relative;}
+.np-play-icon{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;padding-left:5px;background:linear-gradient(135deg,#8b69d1,#c36ca9);color:white;font-size:28px;box-shadow:0 8px 35px #0008;}
+.np-video-caption{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:12px;padding:clamp(16px,3vw,30px);}
+.np-video-caption strong{font-size:clamp(16px,2vw,22px);line-height:1.3;}
+.np-video-caption span{font-size:13px;color:#b9b9c9;line-height:1.5;}
+.np-youtube-link{display:inline-flex;text-decoration:none;white-space:normal;}
+@media(max-width:600px){.np-video-preview{grid-template-columns:1fr;aspect-ratio:auto}.np-video-thumb{min-height:210px}.np-video-caption{padding:18px}.modal{max-height:94dvh!important}.player{aspect-ratio:auto!important}}
+
+</style>
+</head>
+<body>
+<header class="top">
+ <div class="brand" onclick="home()"><div class="brand-mark"></div>NOIR<span>PLAY</span></div>
+ <nav class="nav"><button class="active" data-nav="home">Bosh sahifa</button><button data-nav="movies">Kinolar</button><button data-nav="uz">O‘zbek kinolari</button><button data-nav="ru">Rus kinolari</button><button data-nav="popular">Top reyting</button><button data-nav="saved">Sevimlilar</button></nav>
+ <label class="search"><span>⌕</span><input id="search" placeholder="Kino nomi, janri yoki tili bo‘yicha qidiring..." aria-label="Kino qidirish"></label>
+ <button class="admin-btn" id="openAdmin">＋ Kino qo‘shish</button><button class="user" id="profileBtn" title="Profil">U</button>
+</header>
+<nav class="mobile-nav" aria-label="Mobil navigatsiya"><button class="active" data-mobile="home"><span>⌂</span><span>Bosh sahifa</span></button><button data-mobile="movies"><span>🎬</span><span>Kinolar</span></button><button data-mobile="uz"><span>🇺🇿</span><span>O‘zbek</span></button><button data-mobile="ru"><span>🇷🇺</span><span>Rus</span></button><button data-mobile="saved"><span>♥</span><span>Sevimli</span></button></nav>
+<main>
+ <section class="hero page-section" data-page="home"><div class="hero-img" id="heroImg"></div><div class="hero-content"><div class="eyebrow hero-kicker"><span class="live-dot"></span><span>HOZIR MASHHUR</span><span class="pill" id="heroQuality">4K ULTRA HD</span></div><h1 id="heroTitle">DUNE: PART TWO</h1><div class="meta-line"><span class="rating" id="heroRating">★ 8.8</span><span id="heroYear">2024</span><span id="heroGenre">Fantastika · Sarguzasht</span><span class="pill">16+</span></div><p id="heroDesc">Arrakis taqdiri uchun ulkan kurash boshlanadi. Pol Atreydes o‘z kelajagi va butun xalqining taqdiri orasida tanlov qiladi.</p><div class="hero-actions"><button class="btn btn-primary" id="heroWatch">▶ &nbsp; Tomosha qilish</button><button class="btn btn-secondary" id="heroInfo">ⓘ &nbsp; Batafsil</button></div></div><div class="hero-dots" id="heroDots" aria-label="Mashhur kinolar slayderi"></div><div class="hero-progress" id="heroProgress"><span></span></div></section>
+ <section class="section page-section" data-page="home"><div class="section-head"><div><h2>🔥 Trenddagi kinolar</h2><div class="sub">Hozir tomoshabinlar tanlayotgan filmlar</div></div><button class="see-all" onclick="setGenre('All')">Barchasini ko‘r →</button></div><div class="movie-grid" id="trending"></div></section>
+ <section class="section page-section" data-page="anticipated"><div class="section-head"><div><h2>⏳ Hamma kutgan kinolar</h2><div class="sub">Tomoshabinlar intiqlik bilan kutayotgan premyeralar</div></div><button class="see-all" onclick="toast('Premyera ro‘yxati yangilanmoqda')">Premyeralar →</button></div><div class="movie-grid" id="anticipated"></div></section>
+ <section class="section page-section" data-page="popular"><div class="section-head"><div><h2>⭐ Eng ko‘p yulduz yig‘gan kinolar</h2><div class="sub">Yuqori tomoshabin reytingiga ega filmlar</div></div><button class="see-all" onclick="setTopRated()">Top reyting →</button></div><div class="movie-grid" id="topRated"></div></section>
+ <section class="section page-section" data-page="uz"><div class="section-head"><div><h2>🇺🇿 O‘zbek kinolari</h2><div class="sub">O‘zbek tilidagi filmlar va mahalliy kino</div></div><button class="see-all" onclick="setGenre('O‘zbek kinolari')">Barchasini ko‘r →</button></div><div class="movie-grid" id="uzMovies"></div><div class="sub" id="uzEmpty" style="display:none">Bu bo‘limga kino qo‘shish uchun admin panelidan “O‘zbekcha” tilini tanlang.</div></section>
+ <section class="section page-section" data-page="ru"><div class="section-head"><div><h2>🇷🇺 Rus kinolari</h2><div class="sub">Rus tilidagi filmlar va seriallar</div></div><button class="see-all" onclick="setGenre('Rus kinolari')">Barchasini ko‘r →</button></div><div class="movie-grid" id="ruMovies"></div><div class="sub" id="ruEmpty" style="display:none">Bu bo‘limga kino qo‘shish uchun admin panelidan “Ruscha” tilini tanlang.</div></section>
+ <section class="section page-section" data-page="saved"><div class="section-head"><div><h2>♥ Sevimli kinolar</h2><div class="sub">Saqlab qo‘ygan filmlaringiz</div></div></div><div class="movie-grid" id="savedCatalog"></div><div class="page-empty" id="savedEmpty" style="display:none">Hali sevimli kino qo‘shmagansiz. Kinodagi ♡ tugmasini bosing.</div></section>
+ <section class="section page-section" data-page="movies"><div class="section-head"><div><h2>🎬 Barcha kinolar</h2><div class="sub">O‘zingizga mos filmni toping</div></div></div><div class="genre-row" id="genres"></div><div class="movie-grid" id="catalog"></div><div class="empty" id="empty">😕<br><br>Bu so‘rov bo‘yicha kino topilmadi.</div></section>
+ <section class="section page-section" data-page="home"><div class="wide-card"><div class="wide-img" id="wideImg"></div><div class="wide-text"><div class="eyebrow">SIZNING KEYINGI SEVIMLI KINONGIZ</div><h2>Yangi olamlarni kashf eting</h2><p>Fantastika, drama, komediya va sarguzasht — kayfiyatingizga mos hikoyani tanlang. Kino katalogini qidiring va sevimlilaringizga qo‘shing.</p><button class="btn btn-primary" onclick="document.getElementById('catalog').scrollIntoView({behavior:'smooth'})">Katalogni ko‘rish →</button></div></div></section>
+</main>
+<footer><span>© 2026 NOIRPLAY. Kino olamiga xush kelibsiz.</span><span>Maxfiylik · Foydalanish shartlari · Aloqa</span><span>Video manbalari huquq egalariga tegishli.</span></footer>
+<div class="overlay" id="movieOverlay"><div class="modal"><div class="modal-head"><strong>NOIRPLAY · KINO</strong><button class="close" id="closeModal">×</button></div><div class="player" id="player"></div><div class="details"><div class="eyebrow" id="detailGenre"></div><h2 id="detailTitle"></h2><div class="meta-line" id="detailMeta"></div><p id="detailDesc"></p><div class="detail-actions"><button class="btn btn-primary" id="playAgain">▶ &nbsp; Treylerni ko‘rish</button><button class="btn btn-secondary" id="saveBtn">♡ &nbsp; Sevimlilarga qo‘shish</button></div><p class="sub">MP4 va ruxsat berilgan YouTube videolari shu oynaning ichida ijro etiladi. Ayrim YouTube videolarida tashqi playerda ijro cheklangan bo‘lishi mumkin.</p></div></div></div>
+<div class="overlay" id="adminOverlay"><div class="modal" style="max-width:650px"><div class="modal-head"><strong>🎬 Yangi kino qo‘shish</strong><button class="close" id="closeAdmin">×</button></div><div class="details">
+<p class="sub">Poster rasmini fayldan yuklang yoki rasm havolasini kiriting.</p><div class="admin-form">
+<label>Kino nomi *</label><input id="aTitle" placeholder="Kino nomi">
+<div class="admin-two"><div><label>Chiqqan yili</label><input id="aYear" type="number" value="2026"></div><div><label>Janr</label><select id="aGenre"><option>Fantastika</option><option>Jangari</option><option>Drama</option><option>Komediya</option><option>Sarguzasht</option><option>Animatsiya</option><option>Dahshat</option><option>Serial</option></select></div></div>
+<div class="admin-two"><div><label>Reyting (0–10)</label><input id="aRating" type="number" min="0" max="10" step=".1" value="8.0"></div><div><label>Kino tili</label><select id="aLanguage"><option value="uz">🇺🇿 O‘zbekcha</option><option value="ru">🇷🇺 Ruscha</option><option value="foreign">🌍 Xorijiy</option></select></div></div><label>Video turi *</label>
+<select id="aVideoType">
+  <option value="youtube">YouTube</option>
+  <option value="mp4">MP4 video havolasi</option>
+</select>
+<label id="aVideoLabel">YouTube havolasi yoki video ID *</label>
+<input id="aVideo" placeholder="https://www.youtube.com/watch?v=..." required>
+<small class="sub" id="aVideoHelp">YouTube videosi sayt ichidagi playerda ochiladi. MP4 uchun internetda ochiq turadigan to‘g‘ridan-to‘g‘ri .mp4 havola kiriting.</small>
+<label>Kino tavsifi</label><textarea id="aDesc" placeholder="Qisqacha tavsif..." rows="3"></textarea>
+<label>Poster rasmini fayldan yuklash</label><input id="aImageFile" type="file" accept="image/*">
+<label>Yoki poster rasm havolasi</label><input id="aImageUrl" placeholder="https://.../poster.jpg">
+<label>Banner rasmi havolasi (ixtiyoriy)</label><input id="aBackUrl" placeholder="https://.../backdrop.jpg">
+<label>Qaysi bo‘limga qo‘shilsin?</label><select id="aSection"><option value="popular">Mashhur kinolar</option><option value="anticipated">Hamma kutgan kinolar</option><option value="top">Eng ko‘p yulduz yig‘gan kinolar</option><option value="catalog">Barcha kinolar</option></select>
+<button class="btn btn-primary" id="saveMovie" style="margin-top:16px">✨ Kinoni qo‘shish</button><p class="sub">Kinolar serverdagi ma’lumotlar bazasiga saqlanadi va boshqa foydalanuvchilarga ham ko‘rinadi.</p></div></div></div></div>
+<div class="overlay" id="authOverlay"><div class="modal" style="max-width:460px"><div class="modal-head"><strong>🔐 NOIRPLAY akkaunti</strong><button class="close" id="closeAuth" aria-label="Yopish" style="display:none">×</button></div><div class="details"><p class="sub" id="authHint">Akkaunt yarating yoki mavjud akkauntingizga kiring. Admin uchun maxsus email va parol ishlatiladi.</p><div class="auth-mode"><button type="button" id="authRegisterTab" class="active">Ro‘yxatdan o‘tish</button><button type="button" id="authLoginTab">Kirish</button></div><p class="auth-status" id="authStatus">Yangi foydalanuvchi akkaunti yarating.</p><div class="admin-form"><div id="authNameWrap"><label for="authName">Ism</label><input id="authName" placeholder="Ismingiz" maxlength="60" autocomplete="name"></div><label for="authEmail">Email</label><input id="authEmail" type="email" placeholder="email@example.com" autocomplete="username" inputmode="email"><label for="authPassword">Parol (kamida 8 belgi)</label><input id="authPassword" type="password" placeholder="Kamida 8 ta belgi" minlength="8" maxlength="128" autocomplete="current-password"><button class="btn btn-primary" id="authSubmitBtn" type="button">Ro‘yxatdan o‘tish</button><button class="btn btn-secondary" id="logoutBtn" style="display:none" type="button">Chiqish</button></div></div></div></div>
+<div class="toast" id="toast"></div>
+<script>
+const movies=[
+{title:"Dune: Part Two",year:2024,genre:"Fantastika",rating:"8.8",kind:"Film",desc:"Arrakis sayyorasida Pol Atreydes o‘z oilasi va xalqining kelajagi uchun kurashadi. Ulkan miqyosdagi fantastik sarguzasht.",poster:"https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg",back:"https://image.tmdb.org/t/p/original/xOMo8BRK7PfcJv9JCnx7s5hj0PX.jpg",video:"Way9gW5Y4qg",quality:"4K"},
+{title:"Interstellar",year:2014,genre:"Fantastika",rating:"8.7",kind:"Film",desc:"Insoniyatning kelajagi xavf ostida. Bir guruh tadqiqotchilar yangi uy topish uchun koinotga yo‘l oladi.",poster:"https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",back:"https://image.tmdb.org/t/p/original/xJHokMbljvjADYdit5fK5VQsXEG.jpg",video:"zSWdZVtXT7E",quality:"4K"},
+{title:"The Batman",year:2022,genre:"Jangari",rating:"7.8",kind:"Film",desc:"Gotem shahridagi sirli jinoyatlarni tekshirayotgan Betmen korrupsiya va xavfli jumboqlarga duch keladi.",poster:"https://image.tmdb.org/t/p/w500/74xTEgt7R36Fpooo50r9T25onhq.jpg",back:"https://image.tmdb.org/t/p/original/b0PlSFdDwbyK0cf5RxwDpaOJQvQ.jpg",video:"mqqft2x_Aa4",quality:"4K"},
+{title:"Spider-Man: No Way Home",year:2021,genre:"Fantastika",rating:"8.2",kind:"Film",desc:"Piter Parker hayoti butunlay o‘zgargach, ko‘p olamlar eshigi ochiladi va yangi sinovlar boshlanadi.",poster:"https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg",back:"https://image.tmdb.org/t/p/original/14QbnygCuTO0vl7CAFmPf1fgZfV.jpg",video:"JfVOs4VSpmA",quality:"HD"},
+{title:"Avatar: The Way of Water",year:2022,genre:"Sarguzasht",rating:"7.6",kind:"Film",desc:"Pandora olamida Jeyk va Neytiri oilasini himoya qilish uchun yangi qabilalar bilan birlashadi.",poster:"https://image.tmdb.org/t/p/w500/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg",back:"https://image.tmdb.org/t/p/original/s16H6tpK2utvwDtzZ8Qy4qm5Emw.jpg",video:"d9MyW72ELq0",quality:"4K"},
+{title:"John Wick: Chapter 4",year:2023,genre:"Jangari",rating:"7.7",kind:"Film",desc:"Jon Uik erkinlikka erishish uchun butun dunyodagi eng xavfli jangchilarga qarshi turadi.",poster:"https://image.tmdb.org/t/p/w500/vZloFAK7NmvMGKE7VkF5UHaz0I.jpg",back:"https://image.tmdb.org/t/p/original/h8gHn0OzHvaKze9ZSk3Z0D9J3tM.jpg",video:"qEVUtrk8_B4",quality:"4K"},
+{title:"Oppenheimer",year:2023,genre:"Drama",rating:"8.3",kind:"Film",desc:"Atom bombasini yaratish loyihasi markazida turgan olimning murakkab hayoti va tarixiy qarorlari.",poster:"https://image.tmdb.org/t/p/w500/ptpr0kGAckfQkJeJIt8st5dglvd.jpg",back:"https://image.tmdb.org/t/p/original/fm6KqXpk3M2HVveHwCrBSSBaO0V.jpg",video:"uYPbbksJxIg",quality:"4K"},
+{title:"The Dark Knight",year:2008,genre:"Jangari",rating:"9.0",kind:"Film",desc:"Betmen Gotemni betartiblikka olib kirishga urinayotgan Joker bilan aql va iroda sinoviga kirishadi.",poster:"https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg",back:"https://image.tmdb.org/t/p/original/hqkIcbrOHL86UncnHIsHVcVmzue.jpg",video:"EXeTwQWrcwY",quality:"HD"},
+{title:"Inception",year:2010,genre:"Fantastika",rating:"8.8",kind:"Film",desc:"Tushlar ichiga kirish qobiliyatiga ega mutaxassis imkonsiz topshiriqni bajarishga urinadi.",poster:"https://image.tmdb.org/t/p/w500/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg",back:"https://image.tmdb.org/t/p/original/s3TBrRGB1iav7gFOCNx3H31MoES.jpg",video:"YoHD9XEInc0",quality:"HD"},
+{title:"Top Gun: Maverick",year:2022,genre:"Jangari",rating:"8.2",kind:"Film",desc:"Maverik yangi avlod uchuvchilarini juda xavfli topshiriqqa tayyorlaydi.",poster:"https://image.tmdb.org/t/p/w500/62HCnUTziyWcpDaBO2i1DX17ljH.jpg",back:"https://image.tmdb.org/t/p/original/odJ4hx6g6vBt4lBWKFD1tI8WS4x.jpg",video:"giXco2jaZ_4",quality:"4K"},
+{title:"The Super Mario Bros. Movie",year:2023,genre:"Animatsiya",rating:"7.0",kind:"Multfilm",desc:"Mario va Luidji rang-barang, sehrli olamda katta sarguzashtga kirishadi.",poster:"https://image.tmdb.org/t/p/w500/qNBAXBIQlnOThrVvA6mA2B5ggV6.jpg",back:"https://image.tmdb.org/t/p/original/9n2tJBplPbgR2ca05hS5CKXwP2c.jpg",video:"TnGl01FkMMo",quality:"4K"},
+{title:"The Lord of the Rings",year:2001,genre:"Sarguzasht",rating:"8.9",kind:"Film",desc:"Bir uzuk taqdiri O‘rta Yer kelajagini belgilaydi. Kichik qahramonlar ulkan safarga chiqadi.",poster:"https://image.tmdb.org/t/p/w500/6oom5QYQ2yQTMJIbnvbkBL9cHo6.jpg",back:"https://image.tmdb.org/t/p/original/x2RS3uTcsJJ9IfjNPcgDmukoEcQ.jpg",video:"V75dMMIW2B4",quality:"HD"},
+{title:"Abdullajon",year:1991,genre:"Komediya",rating:"8.5",kind:"Film",language:"uz",desc:"Qishloqqa noodatiy mehmon kelishi bilan kulgili va fantastik voqealar boshlanadi.",poster:"https://placehold.co/500x750/242433/ffffff?text=Abdullajon",back:"https://placehold.co/500x750/242433/ffffff?text=Abdullajon",video:"search:Abdullajon%20o%E2%80%98zbek%20tilida%20rasmiy%20film%20yoki%20treyler",quality:"HD"},
+{title:"Shum bola",year:1977,genre:"Komediya",rating:"8.8",kind:"Film",language:"uz",desc:"G‘afur G‘ulom asari asosidagi sho‘x bolaning sarguzashtlari.",poster:"https://placehold.co/500x750/242433/ffffff?text=Shum%20bola",back:"https://placehold.co/500x750/242433/ffffff?text=Shum%20bola",video:"search:Shum%20bola%20o%E2%80%98zbek%20tilida%20rasmiy%20film%20yoki%20treyler",quality:"HD"},
+{title:"Mahallada duv-duv gap",year:1960,genre:"Komediya",rating:"8.4",kind:"Film",language:"uz",desc:"Mahalla hayoti, muhabbat va quvnoq voqealar haqidagi klassik film.",poster:"https://placehold.co/500x750/242433/ffffff?text=Mahallada%20duv-duv%20gap",back:"https://placehold.co/500x750/242433/ffffff?text=Mahallada%20duv-duv%20gap",video:"search:Mahallada%20duv-duv%20gap%20o%E2%80%98zbek%20tilida%20rasmiy%20film%20yoki%20treyler",quality:"HD"},
+{title:"Suyunchi",year:1982,genre:"Drama",rating:"8.7",kind:"Film",language:"uz",desc:"Oila, mehr-oqibat va insoniy qadriyatlar haqida ta’sirli hikoya.",poster:"https://placehold.co/500x750/242433/ffffff?text=Suyunchi",back:"https://placehold.co/500x750/242433/ffffff?text=Suyunchi",video:"search:Suyunchi%20o%E2%80%98zbek%20tilida%20rasmiy%20film%20yoki%20treyler",quality:"HD"},
+{title:"Kelinlar qo‘zg‘oloni",year:1984,genre:"Komediya",rating:"8.6",kind:"Film",language:"uz",desc:"Bir xonadondagi kelinlar va qaynonaning kulgili munosabatlari.",poster:"https://placehold.co/500x750/242433/ffffff?text=Kelinlar%20qo%E2%80%98zg%E2%80%98oloni",back:"https://placehold.co/500x750/242433/ffffff?text=Kelinlar%20qo%E2%80%98zg%E2%80%98oloni",video:"search:Kelinlar%20qo%E2%80%98zg%E2%80%98oloni%20o%E2%80%98zbek%20tilida%20rasmiy%20film%20yoki%20treyler",quality:"HD"},
+{title:"Temir xotin",year:1990,genre:"Komediya",rating:"8.5",kind:"Film",language:"uz",desc:"Qishloq hayotiga kirib kelgan robot atrofidagi hajviy voqealar.",poster:"https://placehold.co/500x750/242433/ffffff?text=Temir%20xotin",back:"https://placehold.co/500x750/242433/ffffff?text=Temir%20xotin",video:"search:Temir%20xotin%20o%E2%80%98zbek%20tilida%20rasmiy%20film%20yoki%20treyler",quality:"HD"},
+{title:"Tohir va Zuhra",year:1945,genre:"Drama",rating:"8.3",kind:"Film",language:"uz",desc:"Mashhur xalq dostoni asosidagi fojeali muhabbat qissasi.",poster:"https://placehold.co/500x750/242433/ffffff?text=Tohir%20va%20Zuhra",back:"https://placehold.co/500x750/242433/ffffff?text=Tohir%20va%20Zuhra",video:"search:Tohir%20va%20Zuhra%20o%E2%80%98zbek%20tilida%20rasmiy%20film%20yoki%20treyler",quality:"HD"},
+{title:"O‘tkan kunlar",year:1969,genre:"Drama",rating:"8.6",kind:"Film",language:"uz",desc:"Otabek va Kumushning tarixiy muhabbati va davr ziddiyatlari.",poster:"https://placehold.co/500x750/242433/ffffff?text=O%E2%80%98tkan%20kunlar",back:"https://placehold.co/500x750/242433/ffffff?text=O%E2%80%98tkan%20kunlar",video:"search:O%E2%80%98tkan%20kunlar%20o%E2%80%98zbek%20tilida%20rasmiy%20film%20yoki%20treyler",quality:"HD"},
+{title:"Sen yetim emassan",year:1962,genre:"Drama",rating:"8.4",kind:"Film",language:"uz",desc:"Urush yillarida bolalarga mehr bergan oila haqida.",poster:"https://placehold.co/500x750/242433/ffffff?text=Sen%20yetim%20emassan",back:"https://placehold.co/500x750/242433/ffffff?text=Sen%20yetim%20emassan",video:"search:Sen%20yetim%20emassan%20o%E2%80%98zbek%20tilida%20rasmiy%20film%20yoki%20treyler",quality:"HD"},
+{title:"Maftuningman",year:1958,genre:"Musiqali komediya",rating:"8.2",kind:"Film",language:"uz",desc:"San’at, muhabbat va quvnoq sarguzashtlar uyg‘unlashgan klassik film.",poster:"https://placehold.co/500x750/242433/ffffff?text=Maftuningman",back:"https://placehold.co/500x750/242433/ffffff?text=Maftuningman",video:"search:Maftuningman%20o%E2%80%98zbek%20tilida%20rasmiy%20film%20yoki%20treyler",quality:"HD"},
+{title:"Toshkent — non shahri",year:1967,genre:"Drama",rating:"8.1",kind:"Film",language:"uz",desc:"Qiyin davrda mehr va insoniylik izlagan bolaning hikoyasi.",poster:"https://placehold.co/500x750/242433/ffffff?text=Toshkent%20%E2%80%94%20non%20shahri",back:"https://placehold.co/500x750/242433/ffffff?text=Toshkent%20%E2%80%94%20non%20shahri",video:"search:Toshkent%20%E2%80%94%20non%20shahri%20o%E2%80%98zbek%20tilida%20rasmiy%20film%20yoki%20treyler",quality:"HD"},
+{title:"Yor-yor",year:1964,genre:"Komediya",rating:"8.0",kind:"Film",language:"uz",desc:"To‘y va muhabbat atrofidagi quvnoq voqealar.",poster:"https://placehold.co/500x750/242433/ffffff?text=Yor-yor",back:"https://placehold.co/500x750/242433/ffffff?text=Yor-yor",video:"search:Yor-yor%20o%E2%80%98zbek%20tilida%20rasmiy%20film%20yoki%20treyler",quality:"HD"},
+{title:"Osmondagi bolalar",year:2002,genre:"Drama",rating:"8.1",kind:"Film",language:"uz",desc:"Do‘stlik, orzular va ulg‘ayish haqida o‘zbek filmi.",poster:"https://placehold.co/500x750/242433/ffffff?text=Osmondagi%20bolalar",back:"https://placehold.co/500x750/242433/ffffff?text=Osmondagi%20bolalar",video:"search:Osmondagi%20bolalar%20o%E2%80%98zbek%20tilida%20rasmiy%20film%20yoki%20treyler",quality:"HD"},
+{title:"Osmondagi bolalar 2",year:2005,genre:"Drama",rating:"7.9",kind:"Film",language:"uz",desc:"Qahramonlarning yangi hayotiy sinovlari va do‘stligi.",poster:"https://placehold.co/500x750/242433/ffffff?text=Osmondagi%20bolalar%202",back:"https://placehold.co/500x750/242433/ffffff?text=Osmondagi%20bolalar%202",video:"search:Osmondagi%20bolalar%202%20o%E2%80%98zbek%20tilida%20rasmiy%20film%20yoki%20treyler",quality:"HD"},
+{title:"Super kelinchak",year:2008,genre:"Komediya",rating:"7.8",kind:"Film",language:"uz",desc:"Yangi kelin va oila hayotidagi kulgili vaziyatlar.",poster:"https://placehold.co/500x750/242433/ffffff?text=Super%20kelinchak",back:"https://placehold.co/500x750/242433/ffffff?text=Super%20kelinchak",video:"search:Super%20kelinchak%20o%E2%80%98zbek%20tilida%20rasmiy%20film%20yoki%20treyler",quality:"HD"},
+{title:"Boyvachcha kuyov",year:2012,genre:"Komediya",rating:"7.4",kind:"Film",language:"uz",desc:"Kuyovlik va oilaviy munosabatlar haqida yengil komediya.",poster:"https://placehold.co/500x750/242433/ffffff?text=Boyvachcha%20kuyov",back:"https://placehold.co/500x750/242433/ffffff?text=Boyvachcha%20kuyov",video:"search:Boyvachcha%20kuyov%20o%E2%80%98zbek%20tilida%20rasmiy%20film%20yoki%20treyler",quality:"HD"},
+{title:"Mening akam bo‘ydoq",year:2011,genre:"Komediya",rating:"7.5",kind:"Film",language:"uz",desc:"Akasini uylantirishga urinayotgan oila haqida.",poster:"https://placehold.co/500x750/242433/ffffff?text=Mening%20akam%20bo%E2%80%98ydoq",back:"https://placehold.co/500x750/242433/ffffff?text=Mening%20akam%20bo%E2%80%98ydoq",video:"search:Mening%20akam%20bo%E2%80%98ydoq%20o%E2%80%98zbek%20tilida%20rasmiy%20film%20yoki%20treyler",quality:"HD"},
+{title:"Janob hech kim",year:2010,genre:"Drama",rating:"7.6",kind:"Film",language:"uz",desc:"Hayotiy tanlovlar va kutilmagan uchrashuvlar haqidagi hikoya.",poster:"https://placehold.co/500x750/242433/ffffff?text=Janob%20hech%20kim",back:"https://placehold.co/500x750/242433/ffffff?text=Janob%20hech%20kim",video:"search:Janob%20hech%20kim%20o%E2%80%98zbek%20tilida%20rasmiy%20film%20yoki%20treyler",quality:"HD"},
+{title:"Sevginator",year:2007,genre:"Komediya",rating:"7.4",kind:"Film",language:"uz",desc:"Muhabbat va texnologiya aralashgan kulgili voqealar.",poster:"https://placehold.co/500x750/242433/ffffff?text=Sevginator",back:"https://placehold.co/500x750/242433/ffffff?text=Sevginator",video:"search:Sevginator%20o%E2%80%98zbek%20tilida%20rasmiy%20film%20yoki%20treyler",quality:"HD"},
+{title:"Ichkuyov",year:2010,genre:"Komediya",rating:"7.3",kind:"Film",language:"uz",desc:"Kuyovning yangi xonadondagi sarguzashtlari.",poster:"https://placehold.co/500x750/242433/ffffff?text=Ichkuyov",back:"https://placehold.co/500x750/242433/ffffff?text=Ichkuyov",video:"search:Ichkuyov%20o%E2%80%98zbek%20tilida%20rasmiy%20film%20yoki%20treyler",quality:"HD"},
+{title:"Farzandim",year:2013,genre:"Drama",rating:"7.8",kind:"Film",language:"uz",desc:"Ota-ona mehri va farzand tarbiyasi haqida.",poster:"https://placehold.co/500x750/242433/ffffff?text=Farzandim",back:"https://placehold.co/500x750/242433/ffffff?text=Farzandim",video:"search:Farzandim%20o%E2%80%98zbek%20tilida%20rasmiy%20film%20yoki%20treyler",quality:"HD"},
+{title:"Onam",year:2014,genre:"Drama",rating:"7.9",kind:"Film",language:"uz",desc:"Ona mehri va oilaviy qadriyatlar haqida ta’sirli film.",poster:"https://placehold.co/500x750/242433/ffffff?text=Onam",back:"https://placehold.co/500x750/242433/ffffff?text=Onam",video:"search:Onam%20o%E2%80%98zbek%20tilida%20rasmiy%20film%20yoki%20treyler",quality:"HD"},
+{title:"Ibrat",year:2020,genre:"Tarixiy drama",rating:"8.0",kind:"Film",language:"uz",desc:"Ma’rifat va ilm yo‘lida xizmat qilgan inson hayotidan.",poster:"https://placehold.co/500x750/242433/ffffff?text=Ibrat",back:"https://placehold.co/500x750/242433/ffffff?text=Ibrat",video:"search:Ibrat%20o%E2%80%98zbek%20tilida%20rasmiy%20film%20yoki%20treyler",quality:"HD"},
+{title:"Ilhaq",year:2020,genre:"Tarixiy drama",rating:"8.1",kind:"Film",language:"uz",desc:"Urush davri va ona qalbidagi sog‘inch haqida.",poster:"https://placehold.co/500x750/242433/ffffff?text=Ilhaq",back:"https://placehold.co/500x750/242433/ffffff?text=Ilhaq",video:"search:Ilhaq%20o%E2%80%98zbek%20tilida%20rasmiy%20film%20yoki%20treyler",quality:"HD"},
+{title:"101-reys",year:2014,genre:"Drama",rating:"7.7",kind:"Film",language:"uz",desc:"Jasorat va insoniy mas’uliyat haqida hikoya.",poster:"https://placehold.co/500x750/242433/ffffff?text=101-reys",back:"https://placehold.co/500x750/242433/ffffff?text=101-reys",video:"search:101-reys%20o%E2%80%98zbek%20tilida%20rasmiy%20film%20yoki%20treyler",quality:"HD"},
+{title:"Qo‘qon shamoli",year:2018,genre:"Tarixiy drama",rating:"7.6",kind:"Film",language:"uz",desc:"Tarixiy voqealar va murakkab taqdirlar.",poster:"https://placehold.co/500x750/242433/ffffff?text=Qo%E2%80%98qon%20shamoli",back:"https://placehold.co/500x750/242433/ffffff?text=Qo%E2%80%98qon%20shamoli",video:"search:Qo%E2%80%98qon%20shamoli%20o%E2%80%98zbek%20tilida%20rasmiy%20film%20yoki%20treyler",quality:"HD"},
+{title:"Barhayot",year:2019,genre:"Drama",rating:"7.4",kind:"Film",language:"uz",desc:"Oila va hayot sinovlari haqida.",poster:"https://placehold.co/500x750/242433/ffffff?text=Barhayot",back:"https://placehold.co/500x750/242433/ffffff?text=Barhayot",video:"search:Barhayot%20o%E2%80%98zbek%20tilida%20rasmiy%20film%20yoki%20treyler",quality:"HD"},
+{title:"Yondiradi, kuydiradi",year:2011,genre:"Komediya",rating:"7.2",kind:"Film",language:"uz",desc:"Muhabbat va kundalik hayotdagi kulgili holatlar.",poster:"https://placehold.co/500x750/242433/ffffff?text=Yondiradi%2C%20kuydiradi",back:"https://placehold.co/500x750/242433/ffffff?text=Yondiradi%2C%20kuydiradi",video:"search:Yondiradi%2C%20kuydiradi%20o%E2%80%98zbek%20tilida%20rasmiy%20film%20yoki%20treyler",quality:"HD"},
+{title:"Sarvqomat dilbarim",year:1988,genre:"Drama",rating:"8.0",kind:"Film",language:"uz",desc:"Muhabbat va sadoqat haqida romantik hikoya.",poster:"https://placehold.co/500x750/242433/ffffff?text=Sarvqomat%20dilbarim",back:"https://placehold.co/500x750/242433/ffffff?text=Sarvqomat%20dilbarim",video:"search:Sarvqomat%20dilbarim%20o%E2%80%98zbek%20tilida%20rasmiy%20film%20yoki%20treyler",quality:"HD"},
+{title:"O‘zbekfilm: Kichkina tabib",year:1988,genre:"Komediya",rating:"7.9",kind:"Film",language:"uz",desc:"Oila va bolalik dunyosiga oid quvnoq voqealar.",poster:"https://placehold.co/500x750/242433/ffffff?text=O%E2%80%98zbekfilm%3A%20Kichkina%20tabib",back:"https://placehold.co/500x750/242433/ffffff?text=O%E2%80%98zbekfilm%3A%20Kichkina%20tabib",video:"search:O%E2%80%98zbekfilm%3A%20Kichkina%20tabib%20o%E2%80%98zbek%20tilida%20rasmiy%20film%20yoki%20treyler",quality:"HD"},
+{title:"Брат",year:1997,genre:"Драма",rating:"8.2",kind:"Film",language:"ru",desc:"Молодой человек возвращается домой и оказывается в сложном мире большого города.",poster:"https://placehold.co/500x750/242433/ffffff?text=%D0%91%D1%80%D0%B0%D1%82",back:"https://placehold.co/500x750/242433/ffffff?text=%D0%91%D1%80%D0%B0%D1%82",video:"search:%D0%91%D1%80%D0%B0%D1%82%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D1%82%D1%80%D0%B5%D0%B9%D0%BB%D0%B5%D1%80%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC",quality:"HD"},
+{title:"Брат 2",year:2000,genre:"Боевик",rating:"7.8",kind:"Film",language:"ru",desc:"Продолжение истории о дружбе, семье и справедливости.",poster:"https://placehold.co/500x750/242433/ffffff?text=%D0%91%D1%80%D0%B0%D1%82%202",back:"https://placehold.co/500x750/242433/ffffff?text=%D0%91%D1%80%D0%B0%D1%82%202",video:"search:%D0%91%D1%80%D0%B0%D1%82%202%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D1%82%D1%80%D0%B5%D0%B9%D0%BB%D0%B5%D1%80%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC",quality:"HD"},
+{title:"Ирония судьбы, или С лёгким паром!",year:1975,genre:"Комедия",rating:"8.1",kind:"Film",language:"ru",desc:"Новогодняя случайность меняет жизнь нескольких людей.",poster:"https://placehold.co/500x750/242433/ffffff?text=%D0%98%D1%80%D0%BE%D0%BD%D0%B8%D1%8F%20%D1%81%D1%83%D0%B4%D1%8C%D0%B1%D1%8B%2C%20%D0%B8%D0%BB%D0%B8%20%D0%A1%20%D0%BB%D1%91%D0%B3%D0%BA%D0%B8%D0%BC%20%D0%BF%D0%B0%D1%80%D0%BE%D0%BC%21",back:"https://placehold.co/500x750/242433/ffffff?text=%D0%98%D1%80%D0%BE%D0%BD%D0%B8%D1%8F%20%D1%81%D1%83%D0%B4%D1%8C%D0%B1%D1%8B%2C%20%D0%B8%D0%BB%D0%B8%20%D0%A1%20%D0%BB%D1%91%D0%B3%D0%BA%D0%B8%D0%BC%20%D0%BF%D0%B0%D1%80%D0%BE%D0%BC%21",video:"search:%D0%98%D1%80%D0%BE%D0%BD%D0%B8%D1%8F%20%D1%81%D1%83%D0%B4%D1%8C%D0%B1%D1%8B%2C%20%D0%B8%D0%BB%D0%B8%20%D0%A1%20%D0%BB%D1%91%D0%B3%D0%BA%D0%B8%D0%BC%20%D0%BF%D0%B0%D1%80%D0%BE%D0%BC%21%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D1%82%D1%80%D0%B5%D0%B9%D0%BB%D0%B5%D1%80%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC",quality:"HD"},
+{title:"Москва слезам не верит",year:1979,genre:"Драма",rating:"8.1",kind:"Film",language:"ru",desc:"История дружбы, любви и жизненного пути трёх женщин.",poster:"https://placehold.co/500x750/242433/ffffff?text=%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0%20%D1%81%D0%BB%D0%B5%D0%B7%D0%B0%D0%BC%20%D0%BD%D0%B5%20%D0%B2%D0%B5%D1%80%D0%B8%D1%82",back:"https://placehold.co/500x750/242433/ffffff?text=%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0%20%D1%81%D0%BB%D0%B5%D0%B7%D0%B0%D0%BC%20%D0%BD%D0%B5%20%D0%B2%D0%B5%D1%80%D0%B8%D1%82",video:"search:%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0%20%D1%81%D0%BB%D0%B5%D0%B7%D0%B0%D0%BC%20%D0%BD%D0%B5%20%D0%B2%D0%B5%D1%80%D0%B8%D1%82%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D1%82%D1%80%D0%B5%D0%B9%D0%BB%D0%B5%D1%80%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC",quality:"HD"},
+{title:"Легенда №17",year:2013,genre:"Спорт",rating:"7.9",kind:"Film",language:"ru",desc:"История хоккеиста Валерия Харламова и большой спортивной победы.",poster:"https://placehold.co/500x750/242433/ffffff?text=%D0%9B%D0%B5%D0%B3%D0%B5%D0%BD%D0%B4%D0%B0%20%E2%84%9617",back:"https://placehold.co/500x750/242433/ffffff?text=%D0%9B%D0%B5%D0%B3%D0%B5%D0%BD%D0%B4%D0%B0%20%E2%84%9617",video:"search:%D0%9B%D0%B5%D0%B3%D0%B5%D0%BD%D0%B4%D0%B0%20%E2%84%9617%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D1%82%D1%80%D0%B5%D0%B9%D0%BB%D0%B5%D1%80%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC",quality:"HD"},
+{title:"Движение вверх",year:2017,genre:"Спорт",rating:"7.5",kind:"Film",language:"ru",desc:"Команда готовится к решающему баскетбольному матчу.",poster:"https://placehold.co/500x750/242433/ffffff?text=%D0%94%D0%B2%D0%B8%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%B2%D0%B2%D0%B5%D1%80%D1%85",back:"https://placehold.co/500x750/242433/ffffff?text=%D0%94%D0%B2%D0%B8%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%B2%D0%B2%D0%B5%D1%80%D1%85",video:"search:%D0%94%D0%B2%D0%B8%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%B2%D0%B2%D0%B5%D1%80%D1%85%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D1%82%D1%80%D0%B5%D0%B9%D0%BB%D0%B5%D1%80%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC",quality:"HD"},
+{title:"Экипаж",year:2016,genre:"Драма",rating:"7.0",kind:"Film",language:"ru",desc:"Экипаж самолёта сталкивается с чрезвычайной ситуацией.",poster:"https://placehold.co/500x750/242433/ffffff?text=%D0%AD%D0%BA%D0%B8%D0%BF%D0%B0%D0%B6",back:"https://placehold.co/500x750/242433/ffffff?text=%D0%AD%D0%BA%D0%B8%D0%BF%D0%B0%D0%B6",video:"search:%D0%AD%D0%BA%D0%B8%D0%BF%D0%B0%D0%B6%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D1%82%D1%80%D0%B5%D0%B9%D0%BB%D0%B5%D1%80%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC",quality:"HD"},
+{title:"Бумер",year:2003,genre:"Драма",rating:"7.1",kind:"Film",language:"ru",desc:"Дорожная история четырёх друзей и их непростых решений.",poster:"https://placehold.co/500x750/242433/ffffff?text=%D0%91%D1%83%D0%BC%D0%B5%D1%80",back:"https://placehold.co/500x750/242433/ffffff?text=%D0%91%D1%83%D0%BC%D0%B5%D1%80",video:"search:%D0%91%D1%83%D0%BC%D0%B5%D1%80%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D1%82%D1%80%D0%B5%D0%B9%D0%BB%D0%B5%D1%80%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC",quality:"HD"},
+{title:"Сталкер",year:1979,genre:"Фантастика",rating:"8.0",kind:"Film",language:"ru",desc:"Путешествие в загадочную Зону и размышления о человеческих желаниях.",poster:"https://placehold.co/500x750/242433/ffffff?text=%D0%A1%D1%82%D0%B0%D0%BB%D0%BA%D0%B5%D1%80",back:"https://placehold.co/500x750/242433/ffffff?text=%D0%A1%D1%82%D0%B0%D0%BB%D0%BA%D0%B5%D1%80",video:"search:%D0%A1%D1%82%D0%B0%D0%BB%D0%BA%D0%B5%D1%80%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D1%82%D1%80%D0%B5%D0%B9%D0%BB%D0%B5%D1%80%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC",quality:"HD"},
+{title:"Операция «Ы»",year:1965,genre:"Комедия",rating:"8.5",kind:"Film",language:"ru",desc:"Три новеллы о забавных приключениях и недоразумениях.",poster:"https://placehold.co/500x750/242433/ffffff?text=%D0%9E%D0%BF%D0%B5%D1%80%D0%B0%D1%86%D0%B8%D1%8F%20%C2%AB%D0%AB%C2%BB",back:"https://placehold.co/500x750/242433/ffffff?text=%D0%9E%D0%BF%D0%B5%D1%80%D0%B0%D1%86%D0%B8%D1%8F%20%C2%AB%D0%AB%C2%BB",video:"search:%D0%9E%D0%BF%D0%B5%D1%80%D0%B0%D1%86%D0%B8%D1%8F%20%C2%AB%D0%AB%C2%BB%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D1%82%D1%80%D0%B5%D0%B9%D0%BB%D0%B5%D1%80%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC",quality:"HD"},
+{title:"Кавказская пленница",year:1967,genre:"Комедия",rating:"8.4",kind:"Film",language:"ru",desc:"Студент попадает в череду комичных приключений на Кавказе.",poster:"https://placehold.co/500x750/242433/ffffff?text=%D0%9A%D0%B0%D0%B2%D0%BA%D0%B0%D0%B7%D1%81%D0%BA%D0%B0%D1%8F%20%D0%BF%D0%BB%D0%B5%D0%BD%D0%BD%D0%B8%D1%86%D0%B0",back:"https://placehold.co/500x750/242433/ffffff?text=%D0%9A%D0%B0%D0%B2%D0%BA%D0%B0%D0%B7%D1%81%D0%BA%D0%B0%D1%8F%20%D0%BF%D0%BB%D0%B5%D0%BD%D0%BD%D0%B8%D1%86%D0%B0",video:"search:%D0%9A%D0%B0%D0%B2%D0%BA%D0%B0%D0%B7%D1%81%D0%BA%D0%B0%D1%8F%20%D0%BF%D0%BB%D0%B5%D0%BD%D0%BD%D0%B8%D1%86%D0%B0%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D1%82%D1%80%D0%B5%D0%B9%D0%BB%D0%B5%D1%80%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC",quality:"HD"},
+{title:"Иван Васильевич меняет профессию",year:1973,genre:"Комедия",rating:"8.2",kind:"Film",language:"ru",desc:"Необычное изобретение переносит героев в другую эпоху.",poster:"https://placehold.co/500x750/242433/ffffff?text=%D0%98%D0%B2%D0%B0%D0%BD%20%D0%92%D0%B0%D1%81%D0%B8%D0%BB%D1%8C%D0%B5%D0%B2%D0%B8%D1%87%20%D0%BC%D0%B5%D0%BD%D1%8F%D0%B5%D1%82%20%D0%BF%D1%80%D0%BE%D1%84%D0%B5%D1%81%D1%81%D0%B8%D1%8E",back:"https://placehold.co/500x750/242433/ffffff?text=%D0%98%D0%B2%D0%B0%D0%BD%20%D0%92%D0%B0%D1%81%D0%B8%D0%BB%D1%8C%D0%B5%D0%B2%D0%B8%D1%87%20%D0%BC%D0%B5%D0%BD%D1%8F%D0%B5%D1%82%20%D0%BF%D1%80%D0%BE%D1%84%D0%B5%D1%81%D1%81%D0%B8%D1%8E",video:"search:%D0%98%D0%B2%D0%B0%D0%BD%20%D0%92%D0%B0%D1%81%D0%B8%D0%BB%D1%8C%D0%B5%D0%B2%D0%B8%D1%87%20%D0%BC%D0%B5%D0%BD%D1%8F%D0%B5%D1%82%20%D0%BF%D1%80%D0%BE%D1%84%D0%B5%D1%81%D1%81%D0%B8%D1%8E%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D1%82%D1%80%D0%B5%D0%B9%D0%BB%D0%B5%D1%80%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC",quality:"HD"},
+{title:"Бриллиантовая рука",year:1969,genre:"Комедия",rating:"8.2",kind:"Film",language:"ru",desc:"Обычная поездка превращается в невероятную комедийную историю.",poster:"https://placehold.co/500x750/242433/ffffff?text=%D0%91%D1%80%D0%B8%D0%BB%D0%BB%D0%B8%D0%B0%D0%BD%D1%82%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%80%D1%83%D0%BA%D0%B0",back:"https://placehold.co/500x750/242433/ffffff?text=%D0%91%D1%80%D0%B8%D0%BB%D0%BB%D0%B8%D0%B0%D0%BD%D1%82%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%80%D1%83%D0%BA%D0%B0",video:"search:%D0%91%D1%80%D0%B8%D0%BB%D0%BB%D0%B8%D0%B0%D0%BD%D1%82%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%80%D1%83%D0%BA%D0%B0%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D1%82%D1%80%D0%B5%D0%B9%D0%BB%D0%B5%D1%80%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC",quality:"HD"},
+{title:"Любовь и голуби",year:1984,genre:"Комедия",rating:"8.1",kind:"Film",language:"ru",desc:"Семейная история о любви, ошибках и примирении.",poster:"https://placehold.co/500x750/242433/ffffff?text=%D0%9B%D1%8E%D0%B1%D0%BE%D0%B2%D1%8C%20%D0%B8%20%D0%B3%D0%BE%D0%BB%D1%83%D0%B1%D0%B8",back:"https://placehold.co/500x750/242433/ffffff?text=%D0%9B%D1%8E%D0%B1%D0%BE%D0%B2%D1%8C%20%D0%B8%20%D0%B3%D0%BE%D0%BB%D1%83%D0%B1%D0%B8",video:"search:%D0%9B%D1%8E%D0%B1%D0%BE%D0%B2%D1%8C%20%D0%B8%20%D0%B3%D0%BE%D0%BB%D1%83%D0%B1%D0%B8%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D1%82%D1%80%D0%B5%D0%B9%D0%BB%D0%B5%D1%80%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC",quality:"HD"},
+{title:"Девчата",year:1961,genre:"Комедия",rating:"8.0",kind:"Film",language:"ru",desc:"Молодая повариха начинает новую жизнь в лесном посёлке.",poster:"https://placehold.co/500x750/242433/ffffff?text=%D0%94%D0%B5%D0%B2%D1%87%D0%B0%D1%82%D0%B0",back:"https://placehold.co/500x750/242433/ffffff?text=%D0%94%D0%B5%D0%B2%D1%87%D0%B0%D1%82%D0%B0",video:"search:%D0%94%D0%B5%D0%B2%D1%87%D0%B0%D1%82%D0%B0%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D1%82%D1%80%D0%B5%D0%B9%D0%BB%D0%B5%D1%80%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC",quality:"HD"},
+{title:"Москва — Кассиопея",year:1974,genre:"Фантастика",rating:"7.4",kind:"Film",language:"ru",desc:"Школьники отправляются в космическое путешествие.",poster:"https://placehold.co/500x750/242433/ffffff?text=%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0%20%E2%80%94%20%D0%9A%D0%B0%D1%81%D1%81%D0%B8%D0%BE%D0%BF%D0%B5%D1%8F",back:"https://placehold.co/500x750/242433/ffffff?text=%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0%20%E2%80%94%20%D0%9A%D0%B0%D1%81%D1%81%D0%B8%D0%BE%D0%BF%D0%B5%D1%8F",video:"search:%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0%20%E2%80%94%20%D0%9A%D0%B0%D1%81%D1%81%D0%B8%D0%BE%D0%BF%D0%B5%D1%8F%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D1%82%D1%80%D0%B5%D0%B9%D0%BB%D0%B5%D1%80%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC",quality:"HD"},
+{title:"Гостья из будущего",year:1984,genre:"Фантастика",rating:"8.0",kind:"Film",language:"ru",desc:"Приключения школьников и путешествие во времени.",poster:"https://placehold.co/500x750/242433/ffffff?text=%D0%93%D0%BE%D1%81%D1%82%D1%8C%D1%8F%20%D0%B8%D0%B7%20%D0%B1%D1%83%D0%B4%D1%83%D1%89%D0%B5%D0%B3%D0%BE",back:"https://placehold.co/500x750/242433/ffffff?text=%D0%93%D0%BE%D1%81%D1%82%D1%8C%D1%8F%20%D0%B8%D0%B7%20%D0%B1%D1%83%D0%B4%D1%83%D1%89%D0%B5%D0%B3%D0%BE",video:"search:%D0%93%D0%BE%D1%81%D1%82%D1%8C%D1%8F%20%D0%B8%D0%B7%20%D0%B1%D1%83%D0%B4%D1%83%D1%89%D0%B5%D0%B3%D0%BE%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D1%82%D1%80%D0%B5%D0%B9%D0%BB%D0%B5%D1%80%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC",quality:"HD"},
+{title:"Кин-дза-дза!",year:1986,genre:"Фантастика",rating:"7.9",kind:"Film",language:"ru",desc:"Двое землян неожиданно оказываются на далёкой планете.",poster:"https://placehold.co/500x750/242433/ffffff?text=%D0%9A%D0%B8%D0%BD-%D0%B4%D0%B7%D0%B0-%D0%B4%D0%B7%D0%B0%21",back:"https://placehold.co/500x750/242433/ffffff?text=%D0%9A%D0%B8%D0%BD-%D0%B4%D0%B7%D0%B0-%D0%B4%D0%B7%D0%B0%21",video:"search:%D0%9A%D0%B8%D0%BD-%D0%B4%D0%B7%D0%B0-%D0%B4%D0%B7%D0%B0%21%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D1%82%D1%80%D0%B5%D0%B9%D0%BB%D0%B5%D1%80%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC",quality:"HD"},
+{title:"Служебный роман",year:1977,genre:"Комедия",rating:"8.1",kind:"Film",language:"ru",desc:"Рабочие отношения постепенно превращаются в историю любви.",poster:"https://placehold.co/500x750/242433/ffffff?text=%D0%A1%D0%BB%D1%83%D0%B6%D0%B5%D0%B1%D0%BD%D1%8B%D0%B9%20%D1%80%D0%BE%D0%BC%D0%B0%D0%BD",back:"https://placehold.co/500x750/242433/ffffff?text=%D0%A1%D0%BB%D1%83%D0%B6%D0%B5%D0%B1%D0%BD%D1%8B%D0%B9%20%D1%80%D0%BE%D0%BC%D0%B0%D0%BD",video:"search:%D0%A1%D0%BB%D1%83%D0%B6%D0%B5%D0%B1%D0%BD%D1%8B%D0%B9%20%D1%80%D0%BE%D0%BC%D0%B0%D0%BD%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D1%82%D1%80%D0%B5%D0%B9%D0%BB%D0%B5%D1%80%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC",quality:"HD"},
+{title:"Обыкновенное чудо",year:1978,genre:"Фэнтези",rating:"8.0",kind:"Film",language:"ru",desc:"Сказочная история о любви и необычных превращениях.",poster:"https://placehold.co/500x750/242433/ffffff?text=%D0%9E%D0%B1%D1%8B%D0%BA%D0%BD%D0%BE%D0%B2%D0%B5%D0%BD%D0%BD%D0%BE%D0%B5%20%D1%87%D1%83%D0%B4%D0%BE",back:"https://placehold.co/500x750/242433/ffffff?text=%D0%9E%D0%B1%D1%8B%D0%BA%D0%BD%D0%BE%D0%B2%D0%B5%D0%BD%D0%BD%D0%BE%D0%B5%20%D1%87%D1%83%D0%B4%D0%BE",video:"search:%D0%9E%D0%B1%D1%8B%D0%BA%D0%BD%D0%BE%D0%B2%D0%B5%D0%BD%D0%BD%D0%BE%D0%B5%20%D1%87%D1%83%D0%B4%D0%BE%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D1%82%D1%80%D0%B5%D0%B9%D0%BB%D0%B5%D1%80%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC",quality:"HD"},
+{title:"Белое солнце пустыни",year:1970,genre:"Приключения",rating:"8.0",kind:"Film",language:"ru",desc:"Красноармеец помогает женщинам добраться до безопасного места.",poster:"https://placehold.co/500x750/242433/ffffff?text=%D0%91%D0%B5%D0%BB%D0%BE%D0%B5%20%D1%81%D0%BE%D0%BB%D0%BD%D1%86%D0%B5%20%D0%BF%D1%83%D1%81%D1%82%D1%8B%D0%BD%D0%B8",back:"https://placehold.co/500x750/242433/ffffff?text=%D0%91%D0%B5%D0%BB%D0%BE%D0%B5%20%D1%81%D0%BE%D0%BB%D0%BD%D1%86%D0%B5%20%D0%BF%D1%83%D1%81%D1%82%D1%8B%D0%BD%D0%B8",video:"search:%D0%91%D0%B5%D0%BB%D0%BE%D0%B5%20%D1%81%D0%BE%D0%BB%D0%BD%D1%86%D0%B5%20%D0%BF%D1%83%D1%81%D1%82%D1%8B%D0%BD%D0%B8%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D1%82%D1%80%D0%B5%D0%B9%D0%BB%D0%B5%D1%80%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC",quality:"HD"},
+{title:"Жмурки",year:2005,genre:"Комедия",rating:"7.1",kind:"Film",language:"ru",desc:"Криминальная комедия о двух незадачливых героях.",poster:"https://placehold.co/500x750/242433/ffffff?text=%D0%96%D0%BC%D1%83%D1%80%D0%BA%D0%B8",back:"https://placehold.co/500x750/242433/ffffff?text=%D0%96%D0%BC%D1%83%D1%80%D0%BA%D0%B8",video:"search:%D0%96%D0%BC%D1%83%D1%80%D0%BA%D0%B8%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D1%82%D1%80%D0%B5%D0%B9%D0%BB%D0%B5%D1%80%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC",quality:"HD"},
+{title:"Ночной дозор",year:2004,genre:"Фэнтези",rating:"6.4",kind:"Film",language:"ru",desc:"В современном городе скрытно противостоят друг другу силы света и тьмы.",poster:"https://placehold.co/500x750/242433/ffffff?text=%D0%9D%D0%BE%D1%87%D0%BD%D0%BE%D0%B9%20%D0%B4%D0%BE%D0%B7%D0%BE%D1%80",back:"https://placehold.co/500x750/242433/ffffff?text=%D0%9D%D0%BE%D1%87%D0%BD%D0%BE%D0%B9%20%D0%B4%D0%BE%D0%B7%D0%BE%D1%80",video:"search:%D0%9D%D0%BE%D1%87%D0%BD%D0%BE%D0%B9%20%D0%B4%D0%BE%D0%B7%D0%BE%D1%80%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D1%82%D1%80%D0%B5%D0%B9%D0%BB%D0%B5%D1%80%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC",quality:"HD"},
+{title:"Дневной дозор",year:2006,genre:"Фэнтези",rating:"6.5",kind:"Film",language:"ru",desc:"Продолжение истории о равновесии между светом и тьмой.",poster:"https://placehold.co/500x750/242433/ffffff?text=%D0%94%D0%BD%D0%B5%D0%B2%D0%BD%D0%BE%D0%B9%20%D0%B4%D0%BE%D0%B7%D0%BE%D1%80",back:"https://placehold.co/500x750/242433/ffffff?text=%D0%94%D0%BD%D0%B5%D0%B2%D0%BD%D0%BE%D0%B9%20%D0%B4%D0%BE%D0%B7%D0%BE%D1%80",video:"search:%D0%94%D0%BD%D0%B5%D0%B2%D0%BD%D0%BE%D0%B9%20%D0%B4%D0%BE%D0%B7%D0%BE%D1%80%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D1%82%D1%80%D0%B5%D0%B9%D0%BB%D0%B5%D1%80%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC",quality:"HD"},
+{title:"Ёлки",year:2010,genre:"Комедия",rating:"6.2",kind:"Film",language:"ru",desc:"Несколько историй соединяются в новогоднюю ночь.",poster:"https://placehold.co/500x750/242433/ffffff?text=%D0%81%D0%BB%D0%BA%D0%B8",back:"https://placehold.co/500x750/242433/ffffff?text=%D0%81%D0%BB%D0%BA%D0%B8",video:"search:%D0%81%D0%BB%D0%BA%D0%B8%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D1%82%D1%80%D0%B5%D0%B9%D0%BB%D0%B5%D1%80%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC",quality:"HD"},
+{title:"Холоп",year:2019,genre:"Комедия",rating:"6.7",kind:"Film",language:"ru",desc:"Избалованный молодой человек неожиданно оказывается в необычной ситуации.",poster:"https://placehold.co/500x750/242433/ffffff?text=%D0%A5%D0%BE%D0%BB%D0%BE%D0%BF",back:"https://placehold.co/500x750/242433/ffffff?text=%D0%A5%D0%BE%D0%BB%D0%BE%D0%BF",video:"search:%D0%A5%D0%BE%D0%BB%D0%BE%D0%BF%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D1%82%D1%80%D0%B5%D0%B9%D0%BB%D0%B5%D1%80%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC",quality:"HD"},
+{title:"Т-34",year:2018,genre:"Военная драма",rating:"6.8",kind:"Film",language:"ru",desc:"Экипаж танка пытается пройти через тяжёлые испытания.",poster:"https://placehold.co/500x750/242433/ffffff?text=%D0%A2-34",back:"https://placehold.co/500x750/242433/ffffff?text=%D0%A2-34",video:"search:%D0%A2-34%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D1%82%D1%80%D0%B5%D0%B9%D0%BB%D0%B5%D1%80%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC",quality:"HD"},
+{title:"В бой идут одни «старики»",year:1973,genre:"Военная драма",rating:"8.2",kind:"Film",language:"ru",desc:"Лётчики проходят через испытания войны и сохраняют товарищество.",poster:"https://placehold.co/500x750/242433/ffffff?text=%D0%92%20%D0%B1%D0%BE%D0%B9%20%D0%B8%D0%B4%D1%83%D1%82%20%D0%BE%D0%B4%D0%BD%D0%B8%20%C2%AB%D1%81%D1%82%D0%B0%D1%80%D0%B8%D0%BA%D0%B8%C2%BB",back:"https://placehold.co/500x750/242433/ffffff?text=%D0%92%20%D0%B1%D0%BE%D0%B9%20%D0%B8%D0%B4%D1%83%D1%82%20%D0%BE%D0%B4%D0%BD%D0%B8%20%C2%AB%D1%81%D1%82%D0%B0%D1%80%D0%B8%D0%BA%D0%B8%C2%BB",video:"search:%D0%92%20%D0%B1%D0%BE%D0%B9%20%D0%B8%D0%B4%D1%83%D1%82%20%D0%BE%D0%B4%D0%BD%D0%B8%20%C2%AB%D1%81%D1%82%D0%B0%D1%80%D0%B8%D0%BA%D0%B8%C2%BB%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D1%82%D1%80%D0%B5%D0%B9%D0%BB%D0%B5%D1%80%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC",quality:"HD"},
+{title:"А зори здесь тихие",year:1972,genre:"Военная драма",rating:"8.1",kind:"Film",language:"ru",desc:"История людей, проявивших мужество в тяжёлое время.",poster:"https://placehold.co/500x750/242433/ffffff?text=%D0%90%20%D0%B7%D0%BE%D1%80%D0%B8%20%D0%B7%D0%B4%D0%B5%D1%81%D1%8C%20%D1%82%D0%B8%D1%85%D0%B8%D0%B5",back:"https://placehold.co/500x750/242433/ffffff?text=%D0%90%20%D0%B7%D0%BE%D1%80%D0%B8%20%D0%B7%D0%B4%D0%B5%D1%81%D1%8C%20%D1%82%D0%B8%D1%85%D0%B8%D0%B5",video:"search:%D0%90%20%D0%B7%D0%BE%D1%80%D0%B8%20%D0%B7%D0%B4%D0%B5%D1%81%D1%8C%20%D1%82%D0%B8%D1%85%D0%B8%D0%B5%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D1%82%D1%80%D0%B5%D0%B9%D0%BB%D0%B5%D1%80%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC",quality:"HD"},
+{title:"Утомлённые солнцем",year:1994,genre:"Драма",rating:"7.8",kind:"Film",language:"ru",desc:"Семейная история на фоне исторических перемен.",poster:"https://placehold.co/500x750/242433/ffffff?text=%D0%A3%D1%82%D0%BE%D0%BC%D0%BB%D1%91%D0%BD%D0%BD%D1%8B%D0%B5%20%D1%81%D0%BE%D0%BB%D0%BD%D1%86%D0%B5%D0%BC",back:"https://placehold.co/500x750/242433/ffffff?text=%D0%A3%D1%82%D0%BE%D0%BC%D0%BB%D1%91%D0%BD%D0%BD%D1%8B%D0%B5%20%D1%81%D0%BE%D0%BB%D0%BD%D1%86%D0%B5%D0%BC",video:"search:%D0%A3%D1%82%D0%BE%D0%BC%D0%BB%D1%91%D0%BD%D0%BD%D1%8B%D0%B5%20%D1%81%D0%BE%D0%BB%D0%BD%D1%86%D0%B5%D0%BC%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D1%82%D1%80%D0%B5%D0%B9%D0%BB%D0%B5%D1%80%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC",quality:"HD"}
+];
+const baseMovies = [...movies];
+// Render backend manzilini shu yerga yozing (oxirida / bo‘lmasin).
+const API_BASE = 'https://YOUR-NOIRPLAY-SERVER.onrender.com';
+const serverMovieIds = new Set();
+let currentUser = null;
+async function api(path, options={}) { const res = await fetch(API_BASE + path, {credentials:'include',headers:{'Content-Type':'application/json',...(options.headers||{})},...options}); const data = await res.json().catch(()=>({error:'Server javobi o‘qilmadi'})); if(!res.ok) throw new Error(data.error || 'So‘rov bajarilmadi'); return data; }
+async function loadServerMovies(){ try { const data=await api('/api/movies'); for(const m of data.movies||[]){if(!serverMovieIds.has(m.id)){movies.push(m);serverMovieIds.add(m.id)}} render(); } catch(e){ console.info('Server API ulanmagan: mahalliy kino katalogi ishlayapti.'); } }
+async function loadUser(){try{const data=await api('/api/auth/me');currentUser=data.user||null;updateAccountUI()}catch(e){currentUser=null;updateAccountUI()}}
+function updateAccountUI(){const b=document.getElementById('profileBtn');b.textContent=currentUser?(currentUser.role==='admin'?'A':(currentUser.name||'U').slice(0,1).toUpperCase()):'U';b.title=currentUser?`${currentUser.name} · ${currentUser.role==='admin'?'Bosh admin':'Foydalanuvchi'}`:'Kirish / ro‘yxatdan o‘tish';document.getElementById('logoutBtn').style.display=currentUser?'block':'none';document.getElementById('authHint').textContent=currentUser?`Kirdingiz: ${currentUser.name} (${currentUser.role==='admin'?'Bosh admin':'Foydalanuvchi'}).`:'Akkaunt yarating yoki mavjud akkauntingizga kiring. Admin uchun maxsus email va parol ishlatiladi.';}
+const saveMovies = () => {};
+const genres=["All","O‘zbek kinolari","Rus kinolari","Xorijiy kinolar","Jangari","Fantastika","Drama","Komediya","Sarguzasht","Animatsiya"];
+let activeGenre="All",query="",saved=new Set((()=>{try{return JSON.parse(localStorage.getItem("noirplay_favorites_v1")||"[]")}catch(e){return []}})()),current=null,heroIndex=0;
+function saveFavorites(){try{localStorage.setItem("noirplay_favorites_v1",JSON.stringify([...saved]))}catch(e){}}
+const heroSlides=[movies[0],movies[1],movies[4]];
+function toast(m){let el=document.getElementById("toast");el.textContent=m;el.style.display="block";clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>el.style.display="none",2500)}
+function card(m,i){return `<article class="movie" data-index="${movies.indexOf(m)}"><div class="poster"><img loading="lazy" src="${m.poster}" alt="${m.title}" onerror="this.style.opacity='.2'"><span class="quality">${m.quality}</span><button class="fav ${saved.has(m.title)?'saved':''}" data-fav="${m.title}" title="Sevimlilarga qo‘shish">${saved.has(m.title)?'♥':'♡'}</button></div><div class="movie-info"><div class="movie-title">${m.title}</div><div class="movie-meta"><span>${m.year} · ${m.genre} · ${m.language==='uz'?'🇺🇿 UZ':m.language==='ru'?'🇷🇺 RU':'🌍'}</span><span style="color:#ffc857">★ ${m.rating}</span></div></div></article>`}
+function bindCards(container){container.querySelectorAll(".movie").forEach(el=>el.addEventListener("click",e=>{if(e.target.closest(".fav"))return;openMovie(movies[+el.dataset.index])}));container.querySelectorAll("[data-fav]").forEach(b=>b.addEventListener("click",e=>{e.stopPropagation();const t=b.dataset.fav;if(saved.has(t))saved.delete(t);else saved.add(t);saveFavorites();render();toast(saved.has(t)?"Sevimlilarga qo‘shildi":"Sevimlilardan olib tashlandi")}))}
+function render(){const filtered=movies.filter(m=>(activeGenre==="All"||m.genre===activeGenre||activeGenre==="O‘zbek kinolari"&&(m.language||"foreign")==="uz"||activeGenre==="Rus kinolari"&&(m.language||"foreign")==="ru"||activeGenre==="Xorijiy kinolar"&&(m.language||"foreign")==="foreign"||activeGenre==="Seriallar"&&m.kind==="Serial"||activeGenre==="Sevimlilar"&&saved.has(m.title))&&(`${m.title} ${m.genre} ${m.year} ${m.language==="uz"?"o‘zbek uzbek uzbekcha":m.language==="ru"?"rus ruscha русский": "xorijiy foreign"}`).toLowerCase().includes(query.toLowerCase()));const trend=document.getElementById("trending");trend.innerHTML=movies.slice(0,6).map(card).join("");bindCards(trend);const anticipated=document.getElementById("anticipated");anticipated.innerHTML=movies.filter(m=>m.anticipated).concat(movies.filter(m=>!m.anticipated).slice(0,6)).slice(0,6).map(card).join("");bindCards(anticipated);const topRated=document.getElementById("topRated");topRated.innerHTML=[...movies].sort((a,b)=>+b.rating-+a.rating).slice(0,6).map(card).join("");bindCards(topRated);const uz=movies.filter(m=>m.language==="uz"),ru=movies.filter(m=>m.language==="ru");document.getElementById("uzMovies").innerHTML=uz.map(card).join("");document.getElementById("ruMovies").innerHTML=ru.map(card).join("");document.getElementById("uzEmpty").style.display=uz.length?"none":"block";document.getElementById("ruEmpty").style.display=ru.length?"none":"block";bindCards(document.getElementById("uzMovies"));bindCards(document.getElementById("ruMovies"));const cat=document.getElementById("catalog");cat.innerHTML=filtered.map(card).join("");bindCards(cat);document.getElementById("empty").style.display=filtered.length?"none":"block";cat.style.display=filtered.length?"grid":"none";const favMovies=movies.filter(m=>saved.has(m.title));const savedGrid=document.getElementById("savedCatalog");savedGrid.innerHTML=favMovies.map(card).join("");bindCards(savedGrid);document.getElementById("savedEmpty").style.display=favMovies.length?"none":"block";document.querySelectorAll(".genre").forEach(b=>b.classList.toggle("active",b.dataset.genre===activeGenre))}
+function renderGenres(){document.getElementById("genres").innerHTML=genres.map(g=>`<button class="genre ${g===activeGenre?'active':''}" data-genre="${g}">${g==="All"?"Hammasi":g}</button>`).join("");document.querySelectorAll("[data-genre]").forEach(b=>b.onclick=()=>setGenre(b.dataset.genre))}
+function setGenre(g){
+ if(g==="O‘zbek kinolari"){navigatePage("uz");return}
+ if(g==="Rus kinolari"){navigatePage("ru");return}
+ if(g==="Sevimlilar"){navigatePage("saved");return}
+ navigatePage("movies");activeGenre=g;renderGenres();render();window.scrollTo({top:0,behavior:"smooth"})
+}
+const HERO_INTERVAL=6500;let heroTimer=null,heroPaused=false;
+function restartHeroTimer(){clearInterval(heroTimer);const progress=document.getElementById("heroProgress");if(progress){progress.classList.remove("playing");void progress.offsetWidth;if(!heroPaused)progress.classList.add("playing")}if(!heroPaused)heroTimer=setInterval(()=>setHero((heroIndex+1)%heroSlides.length),HERO_INTERVAL)}
+function setHero(i){heroIndex=(i+heroSlides.length)%heroSlides.length;const m=heroSlides[heroIndex],img=document.getElementById("heroImg");img.style.backgroundImage=`url("${m.back}")`;img.classList.remove("changing");void img.offsetWidth;img.classList.add("changing");document.getElementById("heroTitle").textContent=m.title.toUpperCase();document.getElementById("heroRating").textContent="★ "+m.rating;document.getElementById("heroYear").textContent=m.year;document.getElementById("heroGenre").textContent=m.genre+" · "+m.kind;document.getElementById("heroDesc").textContent=m.desc;document.getElementById("heroQuality").textContent=m.quality+" ULTRA HD";document.getElementById("heroDots").innerHTML=heroSlides.map((_,j)=>`<button class="dot ${j===heroIndex?'active':''}" data-dot="${j}" aria-label="${heroSlides[j].title}" title="${heroSlides[j].title}"></button>`).join("");document.querySelectorAll("[data-dot]").forEach(d=>d.onclick=()=>setHero(+d.dataset.dot));restartHeroTimer()}
+const heroEl=document.querySelector(".hero");heroEl.addEventListener("mouseenter",()=>{heroPaused=true;clearInterval(heroTimer);document.getElementById("heroProgress").classList.remove("playing")});heroEl.addEventListener("mouseleave",()=>{heroPaused=false;restartHeroTimer()});heroEl.addEventListener("touchstart",()=>{heroPaused=true;clearInterval(heroTimer)},{passive:true});heroEl.addEventListener("touchend",()=>{heroPaused=false;restartHeroTimer()},{passive:true});
+function getYoutubeId(value){
+ const v=String(value||'').trim();
+ if(/^[A-Za-z0-9_-]{11}$/.test(v)) return v;
+ const match=v.match(/(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:watch\?v=|embed\/|shorts\/|live\/))([A-Za-z0-9_-]{11})/);
+ return match?match[1]:null;
+}
+function getMovieYoutubeUrl(m){
+ const id=getYoutubeId(m.video);
+ return id?'https://www.youtube.com/watch?v='+id:'https://www.youtube.com/results?search_query='+encodeURIComponent(m.title+' rasmiy treyler');
+}
+function isMp4Video(m){
+ return m.videoType==='mp4' || /\.(mp4)(?:[?#].*)?$/i.test(String(m.video||''));
+}
+function openMovie(m){
+ current=m;
+ document.getElementById('detailTitle').textContent=m.title;
+ document.getElementById('detailGenre').textContent=(m.language==='uz'?'🇺🇿 O‘zbekcha':m.language==='ru'?'🇷🇺 Ruscha':'🌍 Xorijiy')+' · '+m.genre+' · '+m.kind;
+ document.getElementById('detailMeta').innerHTML=`<span class="rating">★ ${m.rating}</span><span>${m.year}</span><span>${m.quality||'HD'}</span>`;
+ document.getElementById('detailDesc').textContent=m.desc||'';
+ document.getElementById('saveBtn').innerHTML=saved.has(m.title)?'♥ Sevimlilarda':'♡ Sevimlilarga qo‘shish';
+ const player=document.getElementById('player');
+ if(isMp4Video(m)){
+   const videoUrl=String(m.video||'').trim();
+   player.innerHTML=`<video controls playsinline preload="metadata" style="display:block;width:100%;height:100%;max-height:70vh;background:#000" poster="${String(m.back||m.poster||'').replace(/"/g,'&quot;')}"><source src="${videoUrl.replace(/"/g,'&quot;')}" type="video/mp4">Brauzeringiz MP4 videoni ijro eta olmaydi.</video>`;
+   document.getElementById('playAgain').textContent='▶ Videoni qayta ochish';
+ }else{
+   const videoId=getYoutubeId(m.video);
+   if(videoId){
+     player.innerHTML=`<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" title="${String(m.title).replace(/"/g,'&quot;')}" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
+   }else{
+     player.innerHTML=`<div class="np-video-preview"><div class="np-video-caption"><strong>YouTube video havolasi topilmadi</strong><span>Admin paneldan to‘g‘ri YouTube yoki MP4 havolasini kiriting.</span></div></div>`;
+   }
+   document.getElementById('playAgain').textContent='▶ Treylerni qayta ochish';
+ }
+ document.getElementById('movieOverlay').classList.add('show');
+ document.body.classList.add('modal-open');
+}
+function openCurrentOnYoutube(){
+ if(!current)return;
+ if(isMp4Video(current)){
+   const v=document.querySelector('#player video');
+   if(v){v.currentTime=0;v.play().catch(()=>{});}
+   return;
+ }
+ const id=getYoutubeId(current.video);
+ if(id){
+   const player=document.getElementById('player');
+   player.innerHTML=`<iframe src="https://www.youtube.com/embed/${id}?autoplay=1&rel=0" title="NOIRPLAY video" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
+ }
+}
+function closeMovie(){document.getElementById("movieOverlay").classList.remove("show");document.getElementById("player").innerHTML="";document.body.classList.remove("modal-open")}
+let currentPage="home";
+function navigatePage(page){
+ const allowed=["home","movies","uz","ru","saved","popular","anticipated"];
+ if(!allowed.includes(page))page="home";
+ currentPage=page;
+ document.querySelectorAll(".page-section").forEach(sec=>sec.classList.toggle("page-hidden",!sec.dataset.page.split(" ").includes(page)));
+ document.querySelectorAll("[data-nav]").forEach(b=>b.classList.toggle("active",b.dataset.nav===page));
+ document.querySelectorAll("[data-mobile]").forEach(b=>b.classList.toggle("active",b.dataset.mobile===page));
+ if(page==="movies")activeGenre="All";
+ if(page==="uz")activeGenre="O‘zbek kinolari";
+ if(page==="ru")activeGenre="Rus kinolari";
+ if(page==="saved")activeGenre="Sevimlilar";
+ if(page==="popular")activeGenre="All";
+ renderGenres();render();window.scrollTo({top:0,behavior:"smooth"});
+}
+function home(){query="";document.getElementById("search").value="";navigatePage("home")}
+document.getElementById('aVideoType').addEventListener('change',e=>{
+ const mp4=e.target.value==='mp4';
+ document.getElementById('aVideoLabel').textContent=mp4?'MP4 video havolasi *':'YouTube havolasi yoki video ID *';
+ document.getElementById('aVideo').placeholder=mp4?'https://example.com/video.mp4':'https://www.youtube.com/watch?v=...';
+ document.getElementById('aVideoHelp').textContent=mp4?'MP4 fayl internetda ochiq turishi va to‘g‘ridan-to‘g‘ri .mp4 havolaga ega bo‘lishi kerak.':'YouTube videosi NOIRPLAY ichidagi playerda ijro etiladi.';
+});
+document.getElementById("heroWatch").onclick=()=>openMovie(heroSlides[heroIndex]);document.getElementById("heroInfo").onclick=()=>openMovie(heroSlides[heroIndex]);document.getElementById("closeModal").onclick=closeMovie;document.getElementById("movieOverlay").onclick=e=>{if(e.target.id==="movieOverlay")closeMovie()};document.getElementById("playAgain").onclick=openCurrentOnYoutube;document.getElementById("saveBtn").onclick=()=>{if(!current)return;if(saved.has(current.title))saved.delete(current.title);else saved.add(current.title);saveFavorites();document.getElementById("saveBtn").innerHTML=saved.has(current.title)?"♥ Sevimlilarda":"♡ Sevimlilarga qo‘shish";render();toast(saved.has(current.title)?"Sevimlilarga qo‘shildi":"Sevimlilardan olib tashlandi")};
+document.getElementById("search").addEventListener("input",e=>{query=e.target.value;if(query.trim()&&currentPage!=="movies")navigatePage("movies");else render()});
+document.querySelectorAll("[data-nav]").forEach(b=>b.onclick=()=>navigatePage(b.dataset.nav));
+
+document.getElementById("wideImg").style.backgroundImage=`url("${movies[4].back}")`;
+setHero(0);
+function setTopRated(){query="";navigatePage("popular")}
+document.getElementById("openAdmin").onclick=async()=>{await loadUser();if(!currentUser){document.getElementById('authOverlay').classList.add('show');return}if(currentUser.role!=='admin'){toast('Kino qo‘shish faqat bosh admin uchun');return}document.getElementById("adminOverlay").classList.add("show")};
+document.getElementById('profileBtn').onclick=async()=>{await loadUser();document.getElementById('authOverlay').classList.add('show')};
+document.getElementById('closeAuth').onclick=()=>{if(currentUser)document.getElementById('authOverlay').classList.remove('show')};
+document.getElementById('authOverlay').onclick=e=>{if(e.target.id==='authOverlay'&&currentUser)e.currentTarget.classList.remove('show')};
+let authMode='register';
+function setAuthMode(mode){authMode=mode;const registering=mode==='register';document.getElementById('authNameWrap').style.display=registering?'block':'none';document.getElementById('authName').required=registering;document.getElementById('authName').autocomplete='name';document.getElementById('authRegisterTab').classList.toggle('active',registering);document.getElementById('authLoginTab').classList.toggle('active',!registering);document.getElementById('authSubmitBtn').textContent=registering?'Ro‘yxatdan o‘tish':'Kirish';document.getElementById('authPassword').autocomplete=registering?'new-password':'current-password';document.getElementById('authStatus').textContent=registering?'Yangi foydalanuvchi akkaunti yarating.':'Email va parolingizni kiriting.';document.getElementById('authPassword').setAttribute('aria-label',registering?'Yangi parol':'Parol');}
+async function authAction(mode=authMode){const name=document.getElementById('authName').value.trim(),email=document.getElementById('authEmail').value.trim(),password=document.getElementById('authPassword').value;if(!email||!password||(mode==='register'&&!name)){toast('Barcha kerakli maydonlarni to‘ldiring');return}if(mode==='register'&&password.length<8){toast('Parol kamida 8 ta belgidan iborat bo‘lsin');return}const submit=document.getElementById('authSubmitBtn');submit.disabled=true;submit.textContent='Tekshirilmoqda…';try{const data=await api('/api/auth/'+mode,{method:'POST',body:JSON.stringify({name,email,password})});currentUser=data.user;updateAccountUI();document.getElementById('closeAuth').style.display='block';document.body.classList.remove('modal-open');document.getElementById('authOverlay').classList.remove('show');loadServerMovies();document.getElementById('authPassword').value='';toast(currentUser.role==='admin'?'Bosh admin akkaunti ochildi!':mode==='register'?'Akkaunt muvaffaqiyatli yaratildi':'Muvaffaqiyatli kirdingiz');if(currentUser.role==='admin')document.getElementById('adminOverlay').classList.add('show')}catch(e){toast(e.message)}finally{submit.disabled=false;submit.textContent=authMode==='register'?'Ro‘yxatdan o‘tish':'Kirish'}}
+document.getElementById('authRegisterTab').onclick=()=>setAuthMode('register');document.getElementById('authLoginTab').onclick=()=>setAuthMode('login');document.getElementById('authSubmitBtn').onclick=()=>authAction();document.getElementById('authPassword').addEventListener('keydown',e=>{if(e.key==='Enter')authAction()});document.getElementById('authEmail').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('authPassword').focus()});document.getElementById('logoutBtn').onclick=async()=>{try{await api('/api/auth/logout',{method:'POST',body:'{}'});currentUser=null;updateAccountUI();document.getElementById('closeAuth').style.display='none';document.body.classList.add('modal-open');document.getElementById('authOverlay').classList.add('show');setAuthMode('login');toast('Akkauntdan chiqdingiz')}catch(e){toast(e.message)}};
+ document.querySelectorAll('[data-mobile]').forEach(b=>b.onclick=()=>navigatePage(b.dataset.mobile));
+setAuthMode('register');
+document.getElementById("closeAdmin").onclick=()=>document.getElementById("adminOverlay").classList.remove("show");
+document.getElementById("adminOverlay").onclick=e=>{if(e.target.id==="adminOverlay")e.currentTarget.classList.remove("show")};
+document.getElementById("saveMovie").onclick=async()=>{if(!currentUser||currentUser.role!=='admin'){toast('Faqat bosh admin kino qo‘sha oladi');return}const title=document.getElementById('aTitle').value.trim();if(!title){toast('Kino nomini kiriting');return}let poster=document.getElementById('aImageUrl').value.trim();const file=document.getElementById('aImageFile').files[0];if(file){if(file.size>5*1024*1024){toast('Rasm 5 MB dan kichik bo‘lsin');return}poster=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(file)})}if(!poster)poster='https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=500&q=80';const videoType=document.getElementById('aVideoType').value;
+let video=document.getElementById('aVideo').value.trim();
+if(videoType==='youtube'){
+ const videoId=getYoutubeId(video);
+ if(!videoId){toast('To‘g‘ri YouTube havolasini yoki 11 belgili video ID kiriting');return}
+ video=videoId;
+}else{
+ if(!/^https?:\/\/.+\.mp4(?:[?#].*)?$/i.test(video)){toast('MP4 uchun to‘g‘ridan-to‘g‘ri .mp4 havola kiriting');return}
+}
+const payload={title,videoType,year:+document.getElementById('aYear').value||2026,genre:document.getElementById('aGenre').value,language:document.getElementById('aLanguage').value,rating:Math.max(0,Math.min(10,+document.getElementById('aRating').value||0)),kind:document.getElementById('aGenre').value==='Serial'?'Serial':'Film',desc:document.getElementById('aDesc').value.trim(),poster,back:document.getElementById('aBackUrl').value.trim()||poster,video,quality:'HD',anticipated:document.getElementById('aSection').value==='anticipated',section:document.getElementById('aSection').value};try{const result=await api('/api/movies',{method:'POST',body:JSON.stringify(payload)});const m=result.movie;movies.unshift(m);serverMovieIds.add(m.id);document.getElementById('adminOverlay').classList.remove('show');render();toast('🎉 Kino serverga saqlandi va hammaga ko‘rinadi');const target=payload.section==='anticipated'?'anticipated':payload.section==='top'?'topRated':'catalog';document.getElementById(target).scrollIntoView({behavior:'smooth'});['aTitle','aDesc','aImageFile','aImageUrl','aBackUrl','aVideo'].forEach(id=>document.getElementById(id).value='')}catch(e){toast(e.message)}};
+setHero(0);renderGenres();render();
+(async()=>{
+  await loadUser();
+  if(!currentUser){
+    document.body.classList.add('modal-open');
+    document.getElementById('authOverlay').classList.add('show');
+    setAuthMode('register');
+  } else {
+    document.getElementById('authOverlay').classList.remove('show');
+    document.getElementById('closeAuth').style.display='block';
+    loadServerMovies();
+  }
+})();
+</script>
+</body></html>
